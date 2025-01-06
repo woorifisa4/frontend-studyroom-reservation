@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 
-const ReservationInfo = ({ reservation, setReservation }) => {
+const ReservationInfo = ({ reservation, setReservation, reservations }) => {
   const [reserver, setReserver] = useState(reservation.reserver);
   const [className, setClassName] = useState(reservation.start.cls);
 
   const handleReserve = () => {
     if (reserver) {
+      const isOverlapping = reservations.some(res => 
+        res.class === reservation.start.cls &&
+        ((reservation.start.time >= res.start && reservation.start.time < res.end) ||
+        (reservation.end.time > res.start && reservation.end.time <= res.end) ||
+        (reservation.start.time <= res.start && reservation.end.time >= res.end))
+      );
+      if (isOverlapping) {
+        alert('The selected time slot overlaps with an existing reservation.');
+        return;
+      }
       alert(`Reservation made by ${reserver} from ${reservation.start.time} to ${reservation.end.time} in Class ${className}`);
       setReservation(null);
     }

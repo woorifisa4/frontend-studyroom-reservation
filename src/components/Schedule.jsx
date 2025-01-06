@@ -28,12 +28,28 @@ const Schedule = ({ setReservation, reservations }) => {
     setEnd(null);
   };
 
+  const isOverlapping = (startTime, endTime, cls) => {
+    return reservations.some(reservation => 
+      reservation.class === cls &&
+      ((startTime >= reservation.start && startTime < reservation.end) ||
+      (endTime > reservation.start && endTime <= reservation.end) ||
+      (startTime <= reservation.start && endTime >= reservation.end))
+    );
+  };
+
   const handleMouseUp = (time, cls) => {
     if (start) {
       const startTimeIndex = times.indexOf(start.time);
       const endTimeIndex = times.indexOf(time);
       const blocksSelected = Math.max(1, endTimeIndex - startTimeIndex + 1);
       const endTime = calculateEndTime(startTimeIndex, blocksSelected);
+      if (isOverlapping(start.time, endTime, cls)) {
+        alert('선택한 시간대는 이미 예약되어 있습니다.');
+        setStart(null);
+        setEnd(null);
+        setSelection(null);
+        return;
+      }
       setEnd({ time: endTime, cls });
       setSelection({ start, end: { time: endTime, cls } });
       setReservation({ start, end: { time: endTime, cls }, reserver });
