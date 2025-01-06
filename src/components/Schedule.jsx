@@ -15,7 +15,6 @@ const Schedule = ({ setReservation, reservations }) => {
 
   const [selection, setSelection] = useState(null);
   const [start, setStart] = useState(null);
-  const [end, setEnd] = useState(null);
   const [reserver, setReserver] = useState('');
 
   const calculateEndTime = (startIndex, blocksSelected) => {
@@ -25,7 +24,6 @@ const Schedule = ({ setReservation, reservations }) => {
 
   const handleMouseDown = (time, cls) => {
     setStart({ time, cls });
-    setEnd(null);
   };
 
   const isOverlapping = (startTime, endTime, cls) => {
@@ -46,11 +44,9 @@ const Schedule = ({ setReservation, reservations }) => {
       if (isOverlapping(start.time, endTime, cls)) {
         alert('선택한 시간대는 이미 예약되어 있습니다.');
         setStart(null);
-        setEnd(null);
         setSelection(null);
         return;
       }
-      setEnd({ time: endTime, cls });
       setSelection({ start, end: { time: endTime, cls } });
       setReservation({ start, end: { time: endTime, cls }, reserver });
     }
