@@ -2,7 +2,6 @@ import logo from './logo.svg';
 import './App.css';
 
 import React, { useState, useEffect } from 'react';
-import WeekView from './components/WeekView';
 import Schedule from './components/Schedule';
 import ReservationInfo from './components/ReservationInfo';
 import DateNavigation from './components/DateNavigation';
@@ -30,7 +29,6 @@ const App = () => {
   return (
     <div className="flex flex-col items-center p-6 bg-gray-100 min-h-screen relative">
       <DateNavigation selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
-      <WeekView selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <div className="my-4"></div>
       <Schedule setReservation={setReservation} reservations={reservations} />
       {reservation && (
