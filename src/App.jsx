@@ -3,6 +3,7 @@ import './App.css';
 
 import React, { useState } from 'react';
 import WeekView from './components/WeekView';
+import Schedule from './components/Schedule';
 
 const App = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -42,6 +43,7 @@ const App = () => {
         </button>
       </header>
       <WeekView selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+      <Schedule />
     </div>
   );
 };
