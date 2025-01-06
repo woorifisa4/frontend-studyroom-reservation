@@ -1,15 +1,9 @@
 import React from 'react';
 
 const DateNavigation = ({ selectedDate, setSelectedDate }) => {
-  const handlePrevDay = () => {
+  const changeDate = (days) => {
     const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() - 1);
-    setSelectedDate(newDate);
-  };
-
-  const handleNextDay = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + 1);
+    newDate.setDate(newDate.getDate() + days);
     setSelectedDate(newDate);
   };
 
@@ -21,14 +15,14 @@ const DateNavigation = ({ selectedDate, setSelectedDate }) => {
   return (
     <header className="flex items-center justify-between w-full max-w-md">
       <button
-        onClick={handlePrevDay}
+        onClick={() => changeDate(-1)}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         &lt;
       </button>
       <h1 className="text-xl font-bold">{formatDate(selectedDate)}</h1>
       <button
-        onClick={handleNextDay}
+        onClick={() => changeDate(1)}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         &gt;
