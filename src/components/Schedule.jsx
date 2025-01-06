@@ -46,7 +46,7 @@ const Schedule = ({ setReservation }) => {
         ))}
         {times.map(time => (
           <React.Fragment key={time}>
-            <div className="font-bold h-8 w-16">{time}</div>
+            <div className="font-bold h-12 w-24">{time}</div>
             {classes.map(cls => (
               <div
                 key={cls}
