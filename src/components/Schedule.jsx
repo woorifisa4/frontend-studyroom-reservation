@@ -5,7 +5,9 @@ const Schedule = ({ setReservation }) => {
   const times = [];
   for (let hour = 18; hour <= 21; hour++) {
     for (let minute = 0; minute < 60; minute += 15) {
-      if (hour === 21 && minute > 30) break;
+      if (hour === 21 && minute > 15) {
+        break; // Ensure 21:30 is the last time
+      }
       times.push(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
     }
   }
