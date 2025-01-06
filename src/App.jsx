@@ -11,12 +11,22 @@ const App = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [reservation, setReservation] = useState(null);
 
+  const handleBackdropClick = (e) => {
+    if (e.target.classList.contains('backdrop')) {
+      setReservation(null);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center p-6 bg-gray-100 min-h-screen">
+    <div className="flex flex-col items-center p-6 bg-gray-100 min-h-screen relative">
       <DateNavigation selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <WeekView selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <Schedule setReservation={setReservation} />
-      {reservation && <ReservationInfo reservation={reservation} setReservation={setReservation} />}
+      {reservation && (
+        <div className="backdrop fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center" onClick={handleBackdropClick}>
+          <ReservationInfo reservation={reservation} setReservation={setReservation} />
+        </div>
+      )}
     </div>
   );
 };
