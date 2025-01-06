@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Schedule = ({ setReservation }) => {
+const Schedule = ({ setReservation, reservations }) => {
   const INTERVAL = 15; // Interval in minutes
   const classes = ['A', 'B', 'C', 'D', 'E'];
   const times = [];
@@ -15,7 +15,6 @@ const Schedule = ({ setReservation }) => {
 
   const [selection, setSelection] = useState(null);
   const [start, setStart] = useState(null);
-  const [end, setEnd] = useState(null);
   const [reserver, setReserver] = useState('');
 
   const calculateEndTime = (startIndex, blocksSelected) => {
@@ -25,7 +24,15 @@ const Schedule = ({ setReservation }) => {
 
   const handleMouseDown = (time, cls) => {
     setStart({ time, cls });
-    setEnd(null);
+  };
+
+  const isOverlapping = (startTime, endTime, cls) => {
+    return reservations.some(reservation => 
+      reservation.class === cls &&
+      ((startTime >= reservation.start && startTime < reservation.end) ||
+      (endTime > reservation.start && endTime <= reservation.end) ||
+      (startTime <= reservation.start && endTime >= reservation.end))
+    );
   };
 
   const handleMouseUp = (time, cls) => {
@@ -34,7 +41,12 @@ const Schedule = ({ setReservation }) => {
       const endTimeIndex = times.indexOf(time);
       const blocksSelected = Math.max(1, endTimeIndex - startTimeIndex + 1);
       const endTime = calculateEndTime(startTimeIndex, blocksSelected);
-      setEnd({ time: endTime, cls });
+      if (isOverlapping(start.time, endTime, cls)) {
+        alert('선택한 시간대는 이미 예약되어 있습니다.');
+        setStart(null);
+        setSelection(null);
+        return;
+      }
       setSelection({ start, end: { time: endTime, cls } });
       setReservation({ start, end: { time: endTime, cls }, reserver });
     }
@@ -54,6 +66,26 @@ const Schedule = ({ setReservation }) => {
     return cls === start.cls && currentTime >= startTime && currentTime < endTime;
   };
 
+  const isReserved = (time, cls) => {
+    return reservations.find(reservation => 
+      reservation.start <= time && reservation.end > time && reservation.class === cls
+    );
+  };
+
+  const getRandomLightColor = () => {
+    const letters = 'BCDEF'; // Use only light colors
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * letters.length)];
+    }
+    return color;
+  };
+
+  const reservationColors = reservations.reduce((acc, reservation) => {
+    acc[reservation.reserver.id] = getRandomLightColor();
+    return acc;
+  }, {});
+
   return (
     <div className="schedule select-none">
       <div className="grid grid-cols-6 gap-0">
@@ -64,14 +96,20 @@ const Schedule = ({ setReservation }) => {
         {times.map(time => (
           <React.Fragment key={time}>
             <div className="font-bold h-12 w-24">{time}</div>
-            {classes.map(cls => (
-              <div
-                key={cls}
-                className={`border p-2 cursor-pointer ${isSelected(time, cls) ? 'bg-blue-200' : ''}`}
-                onMouseDown={() => handleMouseDown(time, cls)}
-                onMouseUp={() => handleMouseUp(time, cls)}
-              ></div>
-            ))}
+            {classes.map(cls => {
+              const reservation = isReserved(time, cls);
+              return (
+                <div
+                  key={cls}
+                  className={`border p-2 cursor-pointer ${isSelected(time, cls) ? 'bg-blue-200' : ''}`}
+                  style={{ backgroundColor: reservation ? reservationColors[reservation.reserver.id] : '' }}
+                  onMouseDown={() => handleMouseDown(time, cls)}
+                  onMouseUp={() => handleMouseUp(time, cls)}
+                >
+                  {reservation ? reservation.reserver.name : ''}
+                </div>
+              );
+            })}
           </React.Fragment>
         ))}
       </div>
