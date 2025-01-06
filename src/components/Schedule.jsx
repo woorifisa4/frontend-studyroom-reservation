@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Schedule = () => {
+const Schedule = ({ setReservation }) => {
   const classes = ['A', 'B', 'C', 'D', 'E'];
   const times = [];
   for (let hour = 18; hour <= 21; hour++) {
@@ -24,14 +24,7 @@ const Schedule = () => {
     if (start) {
       setEnd({ time, cls });
       setSelection({ start, end: { time, cls } });
-    }
-  };
-
-  const handleReserve = () => {
-    if (selection && reserver) {
-      alert(`Reservation made by ${reserver} from ${selection.start.time} to ${selection.end.time} in Class ${selection.start.cls}`);
-      setSelection(null);
-      setReserver('');
+      setReservation({ start, end: { time, cls }, reserver });
     }
   };
 
@@ -65,15 +58,6 @@ const Schedule = () => {
           </React.Fragment>
         ))}
       </div>
-      {selection && (
-        <div className="reservation-info mt-4 p-4 border rounded">
-          <div>Reserver: <input type="text" value={reserver} onChange={(e) => setReserver(e.target.value)} /></div>
-          <div>Start: {selection.start.time}</div>
-          <div>End: {selection.end.time}</div>
-          <div>Class: {selection.start.cls}</div>
-          <button onClick={handleReserve} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Reserve</button>
-        </div>
-      )}
     </div>
   );
 };

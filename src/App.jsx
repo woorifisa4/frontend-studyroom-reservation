@@ -4,9 +4,11 @@ import './App.css';
 import React, { useState } from 'react';
 import WeekView from './components/WeekView';
 import Schedule from './components/Schedule';
+import ReservationInfo from './components/ReservationInfo';
 
 const App = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [reservation, setReservation] = useState(null);
 
   const handlePrevDay = () => {
     const newDate = new Date(selectedDate);
@@ -43,7 +45,8 @@ const App = () => {
         </button>
       </header>
       <WeekView selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
-      <Schedule />
+      <Schedule setReservation={setReservation} />
+      {reservation && <ReservationInfo reservation={reservation} setReservation={setReservation} />}
     </div>
   );
 };
