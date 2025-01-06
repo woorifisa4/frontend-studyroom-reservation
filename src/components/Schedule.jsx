@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 
 const Schedule = ({ setReservation }) => {
+  const INTERVAL = 15; // Interval in minutes
   const classes = ['A', 'B', 'C', 'D', 'E'];
   const times = [];
   for (let hour = 18; hour <= 21; hour++) {
-    for (let minute = 0; minute < 60; minute += 15) {
+    for (let minute = 0; minute < 60; minute += INTERVAL) {
       if (hour === 21 && minute > 15) {
         break; // Ensure 21:30 is the last time
       }
@@ -17,6 +18,11 @@ const Schedule = ({ setReservation }) => {
   const [end, setEnd] = useState(null);
   const [reserver, setReserver] = useState('');
 
+  const calculateEndTime = (startIndex, blocksSelected) => {
+    const endIndex = startIndex + blocksSelected;
+    return endIndex < times.length ? times[endIndex] : '21:30';
+  };
+
   const handleMouseDown = (time, cls) => {
     setStart({ time, cls });
     setEnd(null);
@@ -24,9 +30,13 @@ const Schedule = ({ setReservation }) => {
 
   const handleMouseUp = (time, cls) => {
     if (start) {
-      setEnd({ time, cls });
-      setSelection({ start, end: { time, cls } });
-      setReservation({ start, end: { time, cls }, reserver });
+      const startTimeIndex = times.indexOf(start.time);
+      const endTimeIndex = times.indexOf(time);
+      const blocksSelected = Math.max(1, endTimeIndex - startTimeIndex + 1);
+      const endTime = calculateEndTime(startTimeIndex, blocksSelected);
+      setEnd({ time: endTime, cls });
+      setSelection({ start, end: { time: endTime, cls } });
+      setReservation({ start, end: { time: endTime, cls }, reserver });
     }
   };
 
@@ -36,7 +46,12 @@ const Schedule = ({ setReservation }) => {
     const startTime = times.indexOf(start.time);
     const endTime = times.indexOf(end.time);
     const currentTime = times.indexOf(time);
-    return cls === start.cls && currentTime >= startTime && currentTime <= endTime;
+
+    if (end.time === '21:30') {
+      return cls === start.cls && currentTime >= startTime;
+    }
+
+    return cls === start.cls && currentTime >= startTime && currentTime < endTime;
   };
 
   return (
