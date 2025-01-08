@@ -1,12 +1,35 @@
 import React from 'react';
+import { createReservation } from '../api/createReservation';
 
-const ReservationInfo = ({ user, plannedReservation, setPlannedReservation }) => {
+const ReservationInfo = ({ user, selectedDate, plannedReservation, setPlannedReservation, reservations, setReservations }) => {
+
+  const requestCreateReservation = async () => {
+    if (user && plannedReservation) {
+      try {
+        console.log('Creating reservation:', plannedReservation);
+        const newReservation = await createReservation(
+          plannedReservation.room, // 예약 테이블
+          selectedDate, // 예약 날짜
+          plannedReservation.start, // 예약 시작 시간
+          plannedReservation.end, // 예약 종료 시간
+          "test", // 예약 설명 (TODO: 사용자 입력 받기)
+          user.id, // 예약자 ID
+          [] // 참여자 목록
+        );
+        
+        setReservations([...reservations, newReservation]);
+        setPlannedReservation(null);
+        alert("강의실 예약에 성공했습니다.");
+        
+      } catch (error) {
+        console.error('Error creating reservation:', error);
+      }
+    }
+  };
+
   const handleReserve = () => {
     if (user && plannedReservation) {
-      // Todo: 예약 생성 API 호출
-
-      alert(`${plannedReservation.start}부터 ${plannedReservation.end}까지 ${plannedReservation.room} 강의실을 예약했습니다.`);
-      setPlannedReservation(null);
+      requestCreateReservation();
     }
   };
 

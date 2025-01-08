@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Schedule = ({ reservations, setPlannedReservation }) => {
+const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
   const INTERVAL = 15; // 예약 시간 간격
   const classes = ['A', 'B', 'C', 'D', 'E'];
   const times = []; // 가능한 예약 시간대 목록
@@ -64,7 +64,7 @@ const Schedule = ({ reservations, setPlannedReservation }) => {
 
       const finalizedSelection = { start: startTime, end: endTime, room: classRoom };
       setSelection(finalizedSelection);
-      setPlannedReservation({ ...finalizedSelection });
+      setPlannedReservation({ ...finalizedSelection, selectedDate });
     }
   };
 

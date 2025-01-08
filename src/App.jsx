@@ -7,7 +7,6 @@ import ReservationInfo from './components/ReservationInfo';
 import DateNavigation from './components/DateNavigation';
 import FloatingActionButton from './components/FloatingActionButton';
 import { fetchReservations } from './api/fetchReservations';
-import { createReservation } from './api/createReservation';
 import { deleteReservation } from './api/deleteReservation';
 
 const App = () => {
@@ -27,15 +26,6 @@ const App = () => {
     loadReservations();
   }, [selectedDate]);
 
-  const handleCreateReservation = async (reservationData) => {
-    try {
-      const newReservation = await createReservation(reservationData);
-      setReservations([...reservations, newReservation]);
-    } catch (error) {
-      console.error('Error creating reservation:', error);
-    }
-  };
-
   const handleBackdropClick = (e) => {
     if (e.target.classList.contains('backdrop')) {
       setPlannedReservation(null);
@@ -49,12 +39,19 @@ const App = () => {
       <div className="my-4"></div>
       <Schedule
         reservations={reservations}
+        selectedDate={selectedDate}
         setPlannedReservation={setPlannedReservation}
-        onCreateReservation={handleCreateReservation}
       />
       {plannedReservation && (
         <div className="backdrop fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20" onClick={handleBackdropClick}>
-          <ReservationInfo user={user} plannedReservation={plannedReservation} setPlannedReservation={setPlannedReservation} />
+          <ReservationInfo
+            user={user}
+            selectedDate={selectedDate}
+            plannedReservation={plannedReservation}
+            setPlannedReservation={setPlannedReservation}
+            reservations={reservations}
+            setReservations={setReservations}
+          />
         </div>
       )}
       <FloatingActionButton isFabActivated={isFabActivated} setIsFabActivated={setIsFabActivated} />
