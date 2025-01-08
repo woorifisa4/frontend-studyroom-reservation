@@ -16,8 +16,8 @@ const App = () => {
 
   useEffect(() => {
     const loadReservations = async () => {
-      const data = await fetchReservations(selectedDate.toISOString().split('T')[0]);
-      setReservations(data);
+      const response = await fetchReservations(selectedDate.toISOString().split('T')[0]);
+      setReservations(response.data);
     };
 
     loadReservations();

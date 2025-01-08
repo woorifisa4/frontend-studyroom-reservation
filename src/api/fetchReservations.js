@@ -7,8 +7,8 @@ export const fetchReservations = async (date) => {
     const url = `${SERVER_URL}/reservations/${date}`;
 
     const response = await axios.get(url);
-    return response.data.data;
-    
+    return response.data;
+
   } catch (error) {
     console.error('Error fetching reservations:', error);
     return [];

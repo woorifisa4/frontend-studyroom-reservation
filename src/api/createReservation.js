@@ -16,7 +16,7 @@ export const createReservation = async (room, date, start, end, description, res
     };
 
     const response = await axios.post(`${SERVER_URL}/reservations`, requestDTO); // JSON.stringify 생략
-    return response.data.data;
+    return response.data;
 
   } catch (error) {
     console.error('Error creating reservation:', error);
