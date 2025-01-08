@@ -68,7 +68,7 @@ const Schedule = ({ setReservation, reservations }) => {
 
   const isReserved = (time, cls) => {
     return reservations.find(reservation => 
-      reservation.start <= time && reservation.end > time && reservation.class === cls
+      reservation.room == cls && reservation.start <= time && time < reservation.end
     );
   };
 
@@ -102,7 +102,7 @@ const Schedule = ({ setReservation, reservations }) => {
                 <div
                   key={cls}
                   className={`border p-2 cursor-pointer ${isSelected(time, cls) ? 'bg-blue-200' : ''}`}
-                  style={{ backgroundColor: reservation ? reservationColors[reservation.reserver.id] : '' }}
+                  style={{ backgroundColor: reservation ? reservationColors[reservation.reserver.id] : '', textAlign: 'center' }}
                   onMouseDown={() => handleMouseDown(time, cls)}
                   onMouseUp={() => handleMouseUp(time, cls)}
                 >
