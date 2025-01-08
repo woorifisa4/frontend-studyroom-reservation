@@ -18,7 +18,7 @@ const ReservationInfo = ({ user, selectedDate, plannedReservation, setPlannedRes
           [] // 참여자 목록
         );
 
-        setReservations([...reservations, newReservation]);
+        setReservations([...reservations, newReservation.data]);
         setPlannedReservation(null);
         setDescription("");
         alert("강의실 예약에 성공했습니다.");
