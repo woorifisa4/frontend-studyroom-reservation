@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 
 import React, { useState, useEffect } from 'react';
@@ -7,7 +6,6 @@ import ReservationInfo from './components/ReservationInfo';
 import DateNavigation from './components/DateNavigation';
 import FloatingActionButton from './components/FloatingActionButton';
 import { fetchReservations } from './api/fetchReservations';
-import { deleteReservation } from './api/deleteReservation';
 
 const App = () => {
   const [selectedDate, setSelectedDate] = useState(new Date()); // 사용자가 예약을 조회하고자 하는 날짜
@@ -18,11 +16,10 @@ const App = () => {
 
   useEffect(() => {
     const loadReservations = async () => {
-      const formattedDate = selectedDate.toISOString().split('T')[0];
-      console.log('Fetching reservations for date:', formattedDate); // Add this line
-      const data = await fetchReservations(formattedDate);
+      const data = await fetchReservations(selectedDate.toISOString().split('T')[0]);
       setReservations(data);
     };
+
     loadReservations();
   }, [selectedDate]);
 
