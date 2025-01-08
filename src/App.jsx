@@ -11,10 +11,11 @@ import { createReservation } from './api/createReservation';
 import { deleteReservation } from './api/deleteReservation';
 
 const App = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [reservation, setReservation] = useState(null);
-  const [reservations, setReservations] = useState([]);
-  const [isFabOpen, setIsFabOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date()); // 사용자가 예약을 조회하고자 하는 날짜
+  const [plannedReservation, setPlannedReservation] = useState(null); // 사용자가 현재 예약하고자 하는 일정
+  const [reservations, setReservations] = useState([]); // 특정 날짜에 예약된 일정 목록
+  const [isFabActivated, setIsFabActivated] = useState(false); // FAB 버튼 활성화 여부
+  const [user, setUser] = useState({ id: 1, name: '남승현', email: 'namsh1125@naver.com' })
 
   useEffect(() => {
     const loadReservations = async () => {
@@ -37,8 +38,8 @@ const App = () => {
 
   const handleBackdropClick = (e) => {
     if (e.target.classList.contains('backdrop')) {
-      setReservation(null);
-      setIsFabOpen(false);
+      setPlannedReservation(null);
+      setIsFabActivated(false);
     }
   };
 
@@ -47,16 +48,16 @@ const App = () => {
       <DateNavigation selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <div className="my-4"></div>
       <Schedule
-        setReservation={setReservation}
         reservations={reservations}
+        setPlannedReservation={setPlannedReservation}
         onCreateReservation={handleCreateReservation}
       />
-      {reservation && (
+      {plannedReservation && (
         <div className="backdrop fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20" onClick={handleBackdropClick}>
-          <ReservationInfo reservation={reservation} setReservation={setReservation} />
+          <ReservationInfo user={user} plannedReservation={plannedReservation} setPlannedReservation={setPlannedReservation} />
         </div>
       )}
-      <FloatingActionButton isFabOpen={isFabOpen} setIsFabOpen={setIsFabOpen} />
+      <FloatingActionButton isFabActivated={isFabActivated} setIsFabActivated={setIsFabActivated} />
     </div>
   );
 };
