@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createReservation } from '../api/createReservation';
+import { fetchReservations } from '../api/fetchReservations';
 
 const ReservationInfo = ({ user, selectedDate, plannedReservation, setPlannedReservation, reservations, setReservations }) => {
   const [description, setDescription] = useState(""); // 예약 설명
@@ -18,7 +19,9 @@ const ReservationInfo = ({ user, selectedDate, plannedReservation, setPlannedRes
           [] // 참여자 목록
         );
 
-        setReservations([...reservations, newReservation.data]);
+        const updatedReservation = await fetchReservations(selectedDate.toISOString().split('T')[0]);
+        setReservations(updatedReservation.data);
+
         setPlannedReservation(null);
         setDescription("");
         alert("강의실 예약에 성공했습니다.");
