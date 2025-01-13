@@ -9,7 +9,11 @@ const Router = () => {
     const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
-  const today = new Date().toISOString().split('T')[0];
+
+  const getDateParam = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('date') || new Date().toISOString().split('T')[0];
+  };
 
   useEffect(() => {
     if (user) {
@@ -23,8 +27,8 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={user ? <Navigate to={`/reservations?date=${today}`} /> : <LoginPage setUser={setUser} />} />
-        <Route path="/signup" element={user ? <Navigate to={`/reservations?date=${today}`} /> : <SignUpPage />} />
+        <Route path="/login" element={user ? <Navigate to={`/reservations?date=${getDateParam()}`} /> : <LoginPage setUser={setUser} />} />
+        <Route path="/signup" element={user ? <Navigate to={`/reservations?date=${getDateParam()}`} /> : <SignUpPage />} />
         <Route path="/reservations" element={user ? <ReservationPage user={user} /> : <Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
