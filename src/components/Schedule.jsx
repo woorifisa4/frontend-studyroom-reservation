@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import ReservationTooltip from './ReservationTooltip';
 
 const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
   const INTERVAL = 15; // 예약 시간 간격
@@ -16,6 +17,8 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
   const [selection, setSelection] = useState(null); // 선택한 예약 정보 (시작 시간, 종료 시간, 강의실)
   const [isDragging, setIsDragging] = useState(false); // 드래그 중인지 여부
   const [dragEndTime, setDragEndTime] = useState(null); // 드래그 종료 시간
+  const [tooltipInfo, setTooltipInfo] = useState(null); // 현재 보여지는 툴팁의 정보를 저장
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
   // 예약이 완료되면 선택한 예약 정보 초기화
   useEffect(() => {
@@ -140,7 +143,7 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
 
   return (
     <div className="schedule select-none p-4 bg-white rounded-lg shadow-md">
-      <div className="grid grid-cols-6 gap-0 border border-gray-200 rounded-lg overflow-hidden">
+      <div className="grid grid-cols-6 gap-0 border border-gray-200 rounded-lg overflow-visible relative">
         {/* Header */}
         <div className="bg-gray-50 p-3 border-b border-gray-200 w-40"></div>
         {classes.map(cls => (
@@ -174,14 +177,29 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
                     backgroundColor: reservation ? reservationColors[reservation.reserver.id] : '',
                   }}
                   onMouseDown={() => handleMouseDown(time, cls)}
-                  onMouseEnter={() => handleMouseEnter(time, cls)}
+                  onMouseEnter={(e) => {
+                    handleMouseEnter(time, cls);
+                    if (reservation) {
+                      setTooltipInfo(reservation);
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      setTooltipPosition({
+                        x: rect.right,
+                        y: rect.top
+                      });
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setTooltipInfo(null);
+                  }}
                   onMouseUp={() => handleMouseUp(time, cls)}
                 >
                   {reservation && (
-                    <div className="absolute inset-0 flex items-center justify-center p-2">
-                      <span className="text-sm font-medium text-gray-700 truncate">
-                        {reservation.reserver.name}
-                      </span>
+                    <div className="relative w-full h-full">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-sm font-medium text-gray-700 truncate px-2">
+                          {reservation.reserver.name}
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -190,7 +208,15 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
           </React.Fragment>
         ))}
       </div>
-
+      {tooltipInfo && (
+        <div style={{
+          position: 'fixed',
+          left: `${tooltipPosition.x}px`,
+          top: `${tooltipPosition.y}px`,
+        }}>
+          <ReservationTooltip reservation={tooltipInfo} />
+        </div>
+      )}
       {/* Legend - 중앙 정렬 및 스타일 개선 */}
       <div className="mt-4 flex items-center justify-center text-sm text-gray-600 space-x-6">
         <div className="flex items-center">
