@@ -63,7 +63,7 @@ const ReservationPage = ({user}) => {
       {plannedReservation && (
         <div className="reservation-backdrop fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20" 
           onClick={handleReservationBackdropClick}>
-          <div className="z-30">
+          <div className="z-30 w-full max-w-md">
             <ReservationInfo
               user={user}
               selectedDate={selectedDate}
