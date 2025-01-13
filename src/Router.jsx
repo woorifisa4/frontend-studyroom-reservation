@@ -5,11 +5,12 @@ import ReservationPage from "./pages/ReservationPage";
 
 const Router = () => {
   const [user, setUser] = useState(null);
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={user ? <Navigate to="/reservations" /> : <AuthPage setUser={setUser} />} />
+        <Route path="/" element={user ? <Navigate to={`/reservations?date=${today}`} /> : <AuthPage setUser={setUser} />} />
         <Route path="/reservations" element={user ? <ReservationPage user={user} /> : <Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

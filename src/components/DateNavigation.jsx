@@ -9,6 +9,7 @@ const DateNavigation = ({ selectedDate, setSelectedDate }) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
     setSelectedDate(newDate);
+    updateURL(newDate);
   };
 
   const formatDate = (date) => {
@@ -19,11 +20,17 @@ const DateNavigation = ({ selectedDate, setSelectedDate }) => {
   const handleDateChange = (date) => {
     setSelectedDate(date);
     setIsDatePickerOpen(false);
+    updateURL(date);
   };
 
   const handleClickOutside = (event) => {
     if (event.target.closest('.date-picker-container')) return;
     setIsDatePickerOpen(false);
+  };
+
+  const updateURL = (date) => {
+    const formattedDate = date.toISOString().split('T')[0];
+    window.history.pushState(null, '', `/reservations?date=${formattedDate}`);
   };
 
   return (
