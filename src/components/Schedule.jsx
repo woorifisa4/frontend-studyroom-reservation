@@ -79,6 +79,19 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
     return timeIdx >= Math.min(startIdx, endIdx) && timeIdx <= Math.max(startIdx, endIdx);
   };
 
+  // 종료 시간을 계산하는 헬퍼 함수 추가
+  const getEndTime = (time) => {
+    const timeIndex = times.indexOf(time);
+    if (timeIndex === times.length - 1) return '21:30:00';
+    return times[timeIndex + 1];
+  };
+
+  // 시간 포맷팅 함수 추가
+  const formatTimeRange = (startTime) => {
+    const endTime = getEndTime(startTime);
+    return `${startTime.slice(0, 5)} ~ ${endTime.slice(0, 5)}`;
+  };
+
   // 마우스 이벤트 핸들러 (마우스를 누를 때의 동작)
   const handleMouseDown = (time, classRoom) => {
     if (isReserved(time, classRoom)) return;
@@ -126,41 +139,68 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
   };
 
   return (
-    <div className="schedule select-none">
-      <div className="grid grid-cols-6 gap-0">
-        <div></div>
-        {/* Class 정보 출력 */}
+    <div className="schedule select-none p-4 bg-white rounded-lg shadow-md">
+      <div className="grid grid-cols-6 gap-0 border border-gray-200 rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="bg-gray-50 p-3 border-b border-gray-200 w-40"></div>
         {classes.map(cls => (
-          <div key={cls} className="font-bold text-center">{cls}</div>
+          <div key={cls} className="bg-gray-50 p-3 font-semibold text-center border-b border-l border-gray-200">
+            테이블 {cls}
+          </div>
         ))}
 
-        {/* 시간 및 예약 정보 출력 */}
+        {/* Time slots and reservations */}
         {times.map(time => (
           <React.Fragment key={time}>
-            {/* 시간 출력 (hh:mm까지만 출력) */}
-            <div className="font-bold h-12 w-24">{time.slice(0, 5)}</div>
+            {/* Time column - 중앙 정렬 추가 */}
+            <div className="font-medium text-sm p-3 border-b border-gray-200 bg-gray-50 w-40 whitespace-nowrap text-center">
+              {formatTimeRange(time)}
+            </div>
 
-            {/* 예약 정보 출력 */}
+            {/* Reservation slots */}
             {classes.map(cls => {
               const reservation = isReserved(time, cls);
               return (
                 <div
                   key={cls}
-                  className={`border p-2 cursor-pointer ${isSelected(time, cls) ? 'bg-blue-200' : ''}`}
-                  style={{ 
+                  className={`relative border-b border-l border-gray-200 transition-all duration-200
+                    ${isSelected(time, cls) 
+                      ? 'bg-blue-100 hover:bg-blue-200' 
+                      : 'hover:bg-gray-50'
+                    }
+                    ${isDragging ? 'cursor-pointer' : 'cursor-default'}
+                  `}
+                  style={{
                     backgroundColor: reservation ? reservationColors[reservation.reserver.id] : '',
-                    textAlign: 'center'
                   }}
                   onMouseDown={() => handleMouseDown(time, cls)}
                   onMouseEnter={() => handleMouseEnter(time, cls)}
                   onMouseUp={() => handleMouseUp(time, cls)}
                 >
-                  {reservation ? reservation.reserver.name : ''}
+                  {reservation && (
+                    <div className="absolute inset-0 flex items-center justify-center p-2">
+                      <span className="text-sm font-medium text-gray-700 truncate">
+                        {reservation.reserver.name}
+                      </span>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </React.Fragment>
         ))}
+      </div>
+
+      {/* Legend - 중앙 정렬 및 스타일 개선 */}
+      <div className="mt-4 flex items-center justify-center text-sm text-gray-600 space-x-6">
+        <div className="flex items-center">
+          <div className="w-4 h-4 bg-blue-100 border border-blue-200 rounded mr-2"></div>
+          <span>선택된 시간</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-4 h-4 bg-gray-50 border border-gray-200 rounded mr-2"></div>
+          <span>예약 가능</span>
+        </div>
       </div>
     </div>
   );
