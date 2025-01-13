@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createReservation } from '../api/createReservation';
 import { fetchReservations } from '../api/fetchReservations';
 
-const ReservationInfo = ({ user, selectedDate, plannedReservation, setPlannedReservation, reservations, setReservations }) => {
+const ReservationInfo = ({ user, selectedDate, plannedReservation, setPlannedReservation, setReservations }) => {
   const [description, setDescription] = useState(""); // 예약 설명
 
   const requestCreateReservation = async () => {

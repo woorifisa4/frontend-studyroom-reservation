@@ -11,6 +11,7 @@ const ReservationPage = ({user}) => {
   const [reservations, setReservations] = useState([]); // 특정 날짜에 예약된 일정 목록
   const [isFabActivated, setIsFabActivated] = useState(false); // FAB 버튼 활성화 여부
 
+  // 선택한 날짜에 해당하는 예약 목록을 불러오는 함수
   useEffect(() => {
     const loadReservations = async () => {
       const response = await fetchReservations(selectedDate.toISOString().split('T')[0]);
@@ -20,6 +21,7 @@ const ReservationPage = ({user}) => {
     loadReservations();
   }, [selectedDate]);
 
+  // FAB 버튼 외부를 클릭했을 때 실행되는 함수
   const handleBackdropClick = (e) => {
     if (e.target.classList.contains('backdrop')) {
       setPlannedReservation(null);
@@ -36,6 +38,8 @@ const ReservationPage = ({user}) => {
         selectedDate={selectedDate}
         setPlannedReservation={setPlannedReservation}
       />
+
+      {/* 사용자가 예약하고자 하는 일정이 있을 때 (Schedule에 드래그 해서 예약 일정을 생성했을 때) */}
       {plannedReservation && (
         <div className="backdrop fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-20" onClick={handleBackdropClick}>
           <ReservationInfo
@@ -43,7 +47,6 @@ const ReservationPage = ({user}) => {
             selectedDate={selectedDate}
             plannedReservation={plannedReservation}
             setPlannedReservation={setPlannedReservation}
-            reservations={reservations}
             setReservations={setReservations}
           />
         </div>
