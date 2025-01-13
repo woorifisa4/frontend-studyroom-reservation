@@ -2,9 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import CustomCalendar from './CustomCalendar';
 
-const DateNavigation = ({ selectedDate, setSelectedDate }) => {
-  const [isOpen, setIsOpen] = useState(false); // isDatePickerOpen을 isOpen으로 변경
-
+const DateNavigation = ({ selectedDate, setSelectedDate, isCalendarOpen, setIsCalendarOpen }) => {
   const changeDate = useCallback((days) => {
     const targetDate = new Date(selectedDate);
     targetDate.setDate(targetDate.getDate() + days);
@@ -29,6 +27,10 @@ const DateNavigation = ({ selectedDate, setSelectedDate }) => {
     window.history.pushState(null, '', `/reservations?date=${formattedDate}`);
   }, []);
 
+  const handleCalendarClick = () => {
+    setIsCalendarOpen(!isCalendarOpen);
+  };
+
   return (
     <div className="relative">
       <div className="flex items-center gap-4">
@@ -40,7 +42,7 @@ const DateNavigation = ({ selectedDate, setSelectedDate }) => {
         </button>
 
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={handleCalendarClick}
           className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200"
         >
           <Calendar size={16} className="text-gray-500" />
@@ -55,12 +57,12 @@ const DateNavigation = ({ selectedDate, setSelectedDate }) => {
         </button>
       </div>
 
-      {isOpen && (
+      {isCalendarOpen && (
         <CustomCalendar
           selectedDate={selectedDate}
           setSelectedDate={(date) => {
             setSelectedDate(date);
-            setIsOpen(false);
+            setIsCalendarOpen(false);
             updateURL(date);
           }}
         />
