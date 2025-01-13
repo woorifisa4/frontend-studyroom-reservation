@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Schedule from '../components/Schedule';
 import ReservationInfo from '../components/ReservationInfo';
 import DateNavigation from '../components/DateNavigation';
@@ -6,6 +7,7 @@ import FloatingActionButton from '../components/FloatingActionButton';
 import { fetchReservations } from '../api/fetchReservations';
 
 const ReservationPage = ({user}) => {
+  const [searchParams] = useSearchParams();
   const [selectedDate, setSelectedDate] = useState(new Date()); // 사용자가 예약을 조회하고자 하는 날짜
   const [plannedReservation, setPlannedReservation] = useState(null); // 사용자가 현재 예약하고자 하는 일정
   const [reservations, setReservations] = useState([]); // 특정 날짜에 예약된 일정 목록
@@ -21,6 +23,13 @@ const ReservationPage = ({user}) => {
 
     loadReservations();
   }, [selectedDate]);
+
+  useEffect(() => {
+    const dateParam = searchParams.get('date');
+    if (dateParam) {
+      setSelectedDate(new Date(dateParam));
+    }
+  }, [searchParams]);
 
   // 각각의 backdrop에 대한 클릭 핸들러를 분리
   const handleReservationBackdropClick = (e) => {

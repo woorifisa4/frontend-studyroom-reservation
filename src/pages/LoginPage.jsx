@@ -11,6 +11,7 @@ const LoginPage = ({ setUser }) => {
     e.preventDefault();
     try {
       const response = await login(name, email);
+      localStorage.setItem('user', JSON.stringify(response.data));
       setUser(response.data);
     } catch (error) {
       console.error('Error logging in:', error);
