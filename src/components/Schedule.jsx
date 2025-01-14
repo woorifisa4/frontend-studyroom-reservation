@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ReservationTooltip from './ReservationTooltip';
+import { CLASSES } from '../constants/reservation';
+import { getRandomLightColor } from '../utils/color';
+import { generateReservationTimeSlots } from '../utils/reservation';
+import { formatTime } from '../utils/date';
 
 const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
-  const INTERVAL = 15; // 예약 시간 간격
-  const classes = ['A', 'B', 'C', 'D', 'E'];
-  const times = []; // 가능한 예약 시간대 목록
-
-  // 18:00부터 21:30까지 15분 간격으로 예약 가능한 시간대 생성
-  for (let hour = 18; hour <= 21; hour++) {
-    for (let minute = 0; minute < 60; minute += INTERVAL) {
-      if (hour === 21 && minute > 15) break;  // 21:30 이후는 예약 불가능
-      times.push(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`);
-    }
-  }
+  const times = useMemo(() => generateReservationTimeSlots(), []); // 시간 슬롯을 메모이제이션
 
   const [selection, setSelection] = useState(null); // 선택한 예약 정보 (시작 시간, 종료 시간, 강의실)
   const [isDragging, setIsDragging] = useState(false); // 드래그 중인지 여부
@@ -28,16 +22,6 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
       setDragEndTime(null);
     }
   }, [setPlannedReservation]);
-
-  // 랜덤 색상 생성하는 함수 (밝은 색상)
-  const getRandomLightColor = () => {
-    const letters = 'BCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * letters.length)];
-    }
-    return color;
-  };
 
   // 사용자별 색상을 메모이제이션하여 재렌더링시에도 유지
   const reservationColors = useMemo(() => {
@@ -89,16 +73,10 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
     return times[timeIndex + 1];
   };
 
-  // 시간 포맷팅 함수 추가
-  const formatTimeRange = (startTime) => {
-    const endTime = getEndTime(startTime);
-    return `${startTime.slice(0, 5)} ~ ${endTime.slice(0, 5)}`;
-  };
-
   // 마우스 이벤트 핸들러 (마우스를 누를 때의 동작)
   const handleMouseDown = (time, classRoom) => {
     if (isReserved(time, classRoom)) return;
-    
+
     setSelection({ start: time, room: classRoom });
     setIsDragging(true);
     setDragEndTime(time);
@@ -146,7 +124,7 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
       <div className="grid grid-cols-6 gap-0 border border-gray-200 rounded-lg overflow-visible relative">
         {/* Header */}
         <div className="bg-gray-50 p-3 border-b border-gray-200 w-40"></div>
-        {classes.map(cls => (
+        {CLASSES.map(cls => (
           <div key={cls} className="bg-gray-50 p-3 font-semibold text-center border-b border-l border-gray-200">
             테이블 {cls}
           </div>
@@ -157,18 +135,18 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
           <React.Fragment key={time}>
             {/* Time column - 중앙 정렬 추가 */}
             <div className="font-medium text-sm p-3 border-b border-gray-200 bg-gray-50 w-40 whitespace-nowrap text-center">
-              {formatTimeRange(time)}
+              {`${formatTime(time)} ~ ${formatTime(getEndTime(time))}`}
             </div>
 
             {/* Reservation slots */}
-            {classes.map(cls => {
+            {CLASSES.map(cls => {
               const reservation = isReserved(time, cls);
               return (
                 <div
                   key={cls}
                   className={`relative border-b border-l border-gray-200 transition-all duration-200
-                    ${isSelected(time, cls) 
-                      ? 'bg-blue-100 hover:bg-blue-200' 
+                    ${isSelected(time, cls)
+                      ? 'bg-blue-100 hover:bg-blue-200'
                       : 'hover:bg-gray-50'
                     }
                     ${isDragging ? 'cursor-pointer' : 'cursor-default'}

@@ -1,11 +1,8 @@
 import React from 'react';
+import { formatTime } from '../utils/date';
 
 const ReservationTooltip = ({ reservation }) => {
   if (!reservation) return null;
-
-  const formatTime = (timeString) => {
-    return timeString.substring(0, 5);
-  };
 
   return (
     <div className="absolute z-[9999] pointer-events-none bg-white rounded-lg shadow-xl border border-gray-200 p-4 w-72"

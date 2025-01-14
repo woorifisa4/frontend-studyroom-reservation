@@ -1,36 +1,26 @@
 import React from 'react';
-import { Plus, X, FileText, MessageSquare, Bug } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FLOATING_MENU_ITEMS } from '../constants/menu';
 
-const FloatingActionButton = ({ isFabActivated, setIsFabActivated }) => {
-  const fabItems = [
-    {
-      label: 'Release note',
-      icon: <FileText size={18} />,
-      href: 'https://woorifisa4.notion.site/',
-    },
-    {
-      label: '기능 건의',
-      icon: <MessageSquare size={18} />,
-      href: 'https://forms.gle/7zep5wTSUFpbmqR57',
-    },
-    {
-      label: '버그 건의',
-      icon: <Bug size={18} />,
-      href: 'https://forms.gle/oYkteotnATxMzQNf8',
-    },
-  ];
-
-  const handleBackdropClick = (e) => {
-    if (e.target.classList.contains('backdrop')) {
-      setIsFabActivated(false);
+/**
+ * 플로팅 액션 버튼 컴포넌트
+ * @param {boolean} isMenuOpen - 메뉴 오픈 상태
+ * @param {function} setIsMenuOpen - 메뉴 상태 변경 함수
+ */
+const FloatingActionButton = ({ isMenuOpen, setIsMenuOpen }) => {
+  // 배경 클릭시 메뉴 닫기 핸들러
+  const handleBackdropClick = (event) => {
+    if (event.target.classList.contains('backdrop')) {
+      setIsMenuOpen(false);
     }
   };
 
   return (
     <>
+      {/* 메뉴 활성화시 표시되는 반투명 배경 */}
       <AnimatePresence>
-        {isFabActivated && (
+        {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -41,14 +31,16 @@ const FloatingActionButton = ({ isFabActivated, setIsFabActivated }) => {
         )}
       </AnimatePresence>
 
+      {/* 플로팅 버튼 컨테이너 */}
       <div className="fixed bottom-6 right-6 flex flex-col items-end space-y-3 z-20">
+        {/* 메뉴 아이템 리스트 */}
         <AnimatePresence>
-          {isFabActivated && (
+          {isMenuOpen && (
             <div className="space-y-3">
-              {fabItems.map((item, index) => (
+              {FLOATING_MENU_ITEMS.map((menuItem, index) => (
                 <motion.a
-                  key={item.label}
-                  href={item.href}
+                  key={menuItem.label}
+                  href={menuItem.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   initial={{ opacity: 0, x: 100 }}
@@ -56,22 +48,25 @@ const FloatingActionButton = ({ isFabActivated, setIsFabActivated }) => {
                   exit={{ opacity: 0, x: 100 }}
                   transition={{ delay: index * 0.1 }}
                   className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg shadow-lg hover:bg-gray-50 transition-colors duration-200"
+                  title={menuItem.description}
                 >
-                  {item.icon}
-                  <span>{item.label}</span>
+                  <menuItem.icon size={menuItem.iconSize} />
+                  <span>{menuItem.label}</span>
                 </motion.a>
               ))}
             </div>
           )}
         </AnimatePresence>
 
+        {/* 메인 토글 버튼 */}
         <motion.button
-          onClick={() => setIsFabActivated(!isFabActivated)}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="w-14 h-14 bg-blue-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-600 transition-colors duration-200"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
+          aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
         >
-          {isFabActivated ? <X size={24} /> : <Plus size={24} />}
+          {isMenuOpen ? <X size={24} /> : <Plus size={24} />}
         </motion.button>
       </div>
     </>

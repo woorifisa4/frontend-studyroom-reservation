@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signUp } from '../api/signUp';
+import { userApi } from '../api/userApi';
+import Button from '../ui/Button';
 
 const SignUpPage = () => {
   const [name, setName] = useState("");
@@ -10,7 +11,7 @@ const SignUpPage = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await signUp(name, email);
+      await userApi.signup(name, email);
       alert('회원가입이 완료되었습니다. 로그인해주세요.');
       navigate('/login');
     } catch (error) {
@@ -73,12 +74,13 @@ const SignUpPage = () => {
             </div>
 
             <div className="mt-8">
-              <button
+              <Button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-md"
+                variant="primary"
+                fullWidth
               >
                 회원가입
-              </button>
+              </Button>
             </div>
           </form>
 
@@ -95,12 +97,13 @@ const SignUpPage = () => {
             </div>
 
             <div className="mt-4">
-              <button
+              <Button
                 onClick={() => navigate('/login')}
-                className="w-full flex justify-center py-3 px-4 border-2 border-blue-600 rounded-xl text-sm font-bold text-blue-600 bg-white hover:bg-blue-50 transform transition duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                variant="secondary"
+                fullWidth
               >
                 로그인하기
-              </button>
+              </Button>
             </div>
           </div>
         </div>

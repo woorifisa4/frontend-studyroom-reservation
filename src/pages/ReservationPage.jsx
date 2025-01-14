@@ -4,7 +4,7 @@ import Schedule from '../components/Schedule';
 import ReservationInfo from '../components/ReservationInfo';
 import DateNavigation from '../components/DateNavigation';
 import FloatingActionButton from '../components/FloatingActionButton';
-import { fetchReservations } from '../api/fetchReservations';
+import { reservationApi } from '../api/reservationApi';
 
 const ReservationPage = ({user}) => {
   const [searchParams] = useSearchParams();
@@ -25,7 +25,7 @@ const ReservationPage = ({user}) => {
   // 선택한 날짜에 해당하는 예약 목록을 불러오는 함수
   useEffect(() => {
     const loadReservations = async () => {
-      const response = await fetchReservations(selectedDate.toISOString().split('T')[0]);
+      const response = await reservationApi.getByDate(selectedDate.toISOString().split('T')[0]);
       setReservations(response.data);
     };
 
@@ -92,7 +92,7 @@ const ReservationPage = ({user}) => {
         </div>
       )}
       <div className={`${isFabActivated ? 'z-30' : 'z-10'}`}>
-        <FloatingActionButton isFabActivated={isFabActivated} setIsFabActivated={setIsFabActivated} />
+        <FloatingActionButton isMenuOpen={isFabActivated} setIsMenuOpen={setIsFabActivated} />
       </div>
     </div>
   );
