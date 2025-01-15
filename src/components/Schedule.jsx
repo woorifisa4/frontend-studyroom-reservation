@@ -5,7 +5,7 @@ import { getRandomLightColor } from '../utils/color';
 import { generateReservationTimeSlots } from '../utils/reservation';
 import { formatTime } from '../utils/date';
 
-const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
+const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUser }) => {
   const times = useMemo(() => generateReservationTimeSlots(), []); // 시간 슬롯을 메모이제이션
 
   const [selection, setSelection] = useState(null); // 선택한 예약 정보 (시작 시간, 종료 시간, 강의실)
@@ -191,8 +191,25 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation }) => {
           position: 'fixed',
           left: `${tooltipPosition.x}px`,
           top: `${tooltipPosition.y}px`,
-        }}>
-          <ReservationTooltip reservation={tooltipInfo} />
+        }}
+        onMouseEnter={(e) => {
+          e.stopPropagation();
+          setTooltipInfo(tooltipInfo); // tooltip 정보 유지
+        }}
+        onMouseLeave={(e) => {
+          const tooltipRect = e.currentTarget.getBoundingClientRect();
+          const isMouseInTooltip = 
+            e.clientX >= tooltipRect.left &&
+            e.clientX <= tooltipRect.right &&
+            e.clientY >= tooltipRect.top &&
+            e.clientY <= tooltipRect.bottom;
+          
+          if (!isMouseInTooltip) {
+            setTooltipInfo(null);
+          }
+        }}
+        >
+          <ReservationTooltip reservation={tooltipInfo} currentUser={currentUser}/>
         </div>
       )}
       {/* Legend - 중앙 정렬 및 스타일 개선 */}

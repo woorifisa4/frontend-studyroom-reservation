@@ -67,6 +67,7 @@ const ReservationPage = ({user}) => {
         reservations={reservations}
         selectedDate={selectedDate}
         setPlannedReservation={setPlannedReservation}
+        currentUser={user}
       />
 
       {/* Calendar backdrop */}
