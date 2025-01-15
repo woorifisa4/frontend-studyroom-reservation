@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../api/login';
+import { userApi } from '../api/userApi';
+import Button from '../ui/Button';
 
 const LoginPage = ({ setUser }) => {
   const [email, setEmail] = useState("");
@@ -10,7 +11,8 @@ const LoginPage = ({ setUser }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await login(name, email);
+      const response = await userApi.login(name, email);
+      localStorage.setItem('user', JSON.stringify(response.data));
       setUser(response.data);
     } catch (error) {
       console.error('Error logging in:', error);
@@ -72,12 +74,13 @@ const LoginPage = ({ setUser }) => {
             </div>
 
             <div className="mt-8">
-              <button
+              <Button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-md"
+                variant="primary"
+                fullWidth
               >
                 로그인
-              </button>
+              </Button>
             </div>
           </form>
 
@@ -94,12 +97,13 @@ const LoginPage = ({ setUser }) => {
             </div>
 
             <div className="mt-4">
-              <button
+              <Button
                 onClick={() => navigate('/signup')}
-                className="w-full flex justify-center py-3 px-4 border-2 border-blue-600 rounded-xl text-sm font-bold text-blue-600 bg-white hover:bg-blue-50 transform transition duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm"
+                variant="secondary"
+                fullWidth
               >
                 회원가입
-              </button>
+              </Button>
             </div>
           </div>
         </div>

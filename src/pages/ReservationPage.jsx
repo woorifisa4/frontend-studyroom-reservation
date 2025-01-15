@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Schedule from '../components/Schedule';
 import ReservationInfo from '../components/ReservationInfo';
 import DateNavigation from '../components/DateNavigation';
 import FloatingActionButton from '../components/FloatingActionButton';
-import { fetchReservations } from '../api/fetchReservations';
+import { reservationApi } from '../api/reservationApi';
 
 const ReservationPage = ({user}) => {
-  const [selectedDate, setSelectedDate] = useState(new Date()); // 사용자가 예약을 조회하고자 하는 날짜
+  const [searchParams] = useSearchParams();
+  const urlDate = searchParams.get('date');
+  
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (urlDate) {
+      return new Date(urlDate);
+    }
+    return new Date();
+  });
+
   const [plannedReservation, setPlannedReservation] = useState(null); // 사용자가 현재 예약하고자 하는 일정
   const [reservations, setReservations] = useState([]); // 특정 날짜에 예약된 일정 목록
   const [isFabActivated, setIsFabActivated] = useState(false); // FAB 버튼 활성화 여부
@@ -15,12 +25,19 @@ const ReservationPage = ({user}) => {
   // 선택한 날짜에 해당하는 예약 목록을 불러오는 함수
   useEffect(() => {
     const loadReservations = async () => {
-      const response = await fetchReservations(selectedDate.toISOString().split('T')[0]);
+      const response = await reservationApi.getByDate(selectedDate.toISOString().split('T')[0]);
       setReservations(response.data);
     };
 
     loadReservations();
   }, [selectedDate]);
+
+  // URL이 변경될 때마다 selectedDate 업데이트
+  useEffect(() => {
+    if (urlDate) {
+      setSelectedDate(new Date(urlDate));
+    }
+  }, [urlDate]);
 
   // 각각의 backdrop에 대한 클릭 핸들러를 분리
   const handleReservationBackdropClick = (e) => {
@@ -75,7 +92,7 @@ const ReservationPage = ({user}) => {
         </div>
       )}
       <div className={`${isFabActivated ? 'z-30' : 'z-10'}`}>
-        <FloatingActionButton isFabActivated={isFabActivated} setIsFabActivated={setIsFabActivated} />
+        <FloatingActionButton isMenuOpen={isFabActivated} setIsMenuOpen={setIsFabActivated} />
       </div>
     </div>
   );
