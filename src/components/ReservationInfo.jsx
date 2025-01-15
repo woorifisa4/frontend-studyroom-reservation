@@ -260,16 +260,25 @@ const ReservationInfo = ({
             {/* 향상된 스타일의 검색 결과 */}
             {searchResults.length > 0 && (
               <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
-                {searchResults.map((result) => (
-                  <div
-                    key={result.id}
-                    className="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors duration-200"
-                    onClick={() => handleParticipantSelect(result)}
-                  >
-                    <div className="font-medium text-gray-900">{result.name}</div>
-                    <div className="text-sm text-gray-500">{result.email}</div>
-                  </div>
-                ))}
+                {searchResults.map((result) => {
+                  const highlightedName = result.name.replace(
+                    new RegExp(`(${participantSearchKeyword})`, 'gi'),
+                    (match) => `<span class="bg-blue-100">${match}</span>`
+                  );
+                  return (
+                    <div
+                      key={result.id}
+                      className="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors duration-200"
+                      onClick={() => handleParticipantSelect(result)}
+                    >
+                      <div
+                        className="font-medium text-gray-900"
+                        dangerouslySetInnerHTML={{ __html: highlightedName }}
+                      />
+                      <div className="text-sm text-gray-500">{result.email}</div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
