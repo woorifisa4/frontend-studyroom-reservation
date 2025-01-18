@@ -1,9 +1,15 @@
-import React from 'react';
-import Router from './Router';
+import React from "react";
+import Router from "./Router";
+import { ReservationProvider } from "./context/ReservationContext";
+import { UserProvider } from "./context/UserContext";
 
 const App = () => {
   return (
-    <Router />
+    <UserProvider>
+      <ReservationProvider>
+        <Router />
+      </ReservationProvider>
+    </UserProvider>
   );
 };
 
