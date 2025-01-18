@@ -1,23 +1,18 @@
 import React from "react";
 import { formatTime } from "../utils/date";
-import { reservationApi } from "../api/reservationApi";
-import { showToast } from "../ui/Toast";
+import { useReservation } from "../context/ReservationContext";
 
 const ReservationTooltip = ({ reservation, currentUser }) => {
+  const { deleteReservation } = useReservation();
+
   if (!reservation) return null;
 
   const isOwner = currentUser?.id === reservation.reserver.id;
 
   const onDelete = async (e) => {
-    e.stopPropagation(); // 이벤트 전파 방지
-    try {
-      if (window.confirm("예약을 삭제하시겠습니까?")) {
-        await reservationApi.delete(reservation.id);
-        showToast("예약이 삭제되었습니다.", "success");
-        window.location.reload(); // 삭제 후 페이지 새로고침
-      }
-    } catch (error) {
-      showToast("예약 삭제 중 오류가 발생했습니다.", "error");
+    e.stopPropagation();
+    if (window.confirm("예약을 삭제하시겠습니까?")) {
+      await deleteReservation(reservation.id);
     }
   };
 

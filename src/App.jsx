@@ -1,9 +1,12 @@
-import React from 'react';
-import Router from './Router';
+import React from "react";
+import Router from "./Router";
+import { ReservationProvider } from "./context/ReservationContext";
 
 const App = () => {
   return (
-    <Router />
+    <ReservationProvider>
+      <Router />
+    </ReservationProvider>
   );
 };
 
