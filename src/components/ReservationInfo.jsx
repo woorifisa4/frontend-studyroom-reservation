@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Calendar, Clock, User, Layout, X, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { userApi } from "../api/userApi";
@@ -16,6 +16,7 @@ const ReservationInfo = ({ user, selectedDate }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedParticipants, setSelectedParticipants] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const searchResultsRef = useRef(null);
 
   /**
    * 참여자 조회를 위한 사용자 검색 함수
@@ -58,6 +59,23 @@ const ReservationInfo = ({ user, selectedDate }) => {
   useEffect(() => {
     debouncedUserSearch(participantSearchKeyword);
   }, [participantSearchKeyword, debouncedUserSearch]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchResultsRef.current &&
+        !searchResultsRef.current.contains(event.target)
+      ) {
+        setSearchResults([]);
+        setParticipantSearchKeyword("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   /**
    * 새로운 예약을 생성하는 핸들러
@@ -223,7 +241,10 @@ const ReservationInfo = ({ user, selectedDate }) => {
 
             {/* 향상된 스타일의 검색 결과 */}
             {searchResults.length > 0 && (
-              <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50 max-h-[300px] overflow-y-auto">
+              <div
+                ref={searchResultsRef}
+                className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50 max-h-[300px] overflow-y-auto"
+              >
                 {searchResults.map((result) => {
                   const highlightedName = result.name.replace(
                     new RegExp(`(${participantSearchKeyword})`, "gi"),
