@@ -1,11 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import ReservationTooltip from './ReservationTooltip';
-import { CLASSES } from '../constants/reservation';
-import { getRandomLightColor } from '../utils/color';
-import { generateReservationTimeSlots } from '../utils/reservation';
-import { formatTime } from '../utils/date';
+import React, { useState, useEffect, useMemo } from "react";
+import ReservationTooltip from "./ReservationTooltip";
+import { CLASSES } from "../constants/reservation";
+import { getRandomLightColor } from "../utils/color";
+import { generateReservationTimeSlots } from "../utils/reservation";
+import { formatTime } from "../utils/date";
+import { showToast } from "../ui/Toast";
 
-const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUser }) => {
+const Schedule = ({
+  reservations,
+  selectedDate,
+  setPlannedReservation,
+  currentUser,
+}) => {
   const times = useMemo(() => generateReservationTimeSlots(), []); // 시간 슬롯을 메모이제이션
 
   const [selection, setSelection] = useState(null); // 선택한 예약 정보 (시작 시간, 종료 시간, 강의실)
@@ -26,29 +32,33 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUs
   // 사용자별 색상을 메모이제이션하여 재렌더링시에도 유지
   const reservationColors = useMemo(() => {
     const colors = {};
-    reservations.forEach(reservation => {
+    reservations.forEach((reservation) => {
       if (!colors[reservation.reserver.id]) {
         colors[reservation.reserver.id] = getRandomLightColor();
       }
     });
 
     return colors;
-  }, [reservations.map(r => r.reserver.id).join(',')]); // 예약자 ID 목록이 변경될 때만 색상 재생성
+  }, [reservations.map((r) => r.reserver.id).join(",")]); // 예약자 ID 목록이 변경될 때만 색상 재생성
 
   // 이미 예약된 시간인지 반환하는 함수
   const isReserved = (startTime, classRoom) => {
-    return reservations.find(reservation =>
-      reservation.room === classRoom && reservation.start <= startTime && startTime < reservation.end
+    return reservations.find(
+      (reservation) =>
+        reservation.room === classRoom &&
+        reservation.start <= startTime &&
+        startTime < reservation.end
     );
   };
 
   // 예약된 일정과 사용자가 예약하고자 하는 일정이 출돌이 나는지 반환하는 함수
   const isConflict = (startTime, endTime, classRoom) => {
-    return reservations.some(reservation =>
-      reservation.room === classRoom &&
-      ((startTime >= reservation.start && startTime < reservation.end) ||
-        (endTime > reservation.start && endTime <= reservation.end) ||
-        (startTime <= reservation.start && endTime >= reservation.end))
+    return reservations.some(
+      (reservation) =>
+        reservation.room === classRoom &&
+        ((startTime >= reservation.start && startTime < reservation.end) ||
+          (endTime > reservation.start && endTime <= reservation.end) ||
+          (startTime <= reservation.start && endTime >= reservation.end))
     );
   };
 
@@ -63,13 +73,16 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUs
     const timeIdx = times.indexOf(time);
 
     if (room !== classRoom) return false;
-    return timeIdx >= Math.min(startIdx, endIdx) && timeIdx <= Math.max(startIdx, endIdx);
+    return (
+      timeIdx >= Math.min(startIdx, endIdx) &&
+      timeIdx <= Math.max(startIdx, endIdx)
+    );
   };
 
   // 종료 시간을 계산하는 헬퍼 함수 추가
   const getEndTime = (time) => {
     const timeIndex = times.indexOf(time);
-    if (timeIndex === times.length - 1) return '21:30:00';
+    if (timeIndex === times.length - 1) return "21:30:00";
     return times[timeIndex + 1];
   };
 
@@ -101,11 +114,11 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUs
     const endIdx = times.indexOf(time); // 종료 시간 인덱스
     const startTime = times[Math.min(startIdx, endIdx)]; // 시작 시간
     const endTimeIdx = Math.max(startIdx, endIdx) + 1; // 종료 시간 인덱스
-    const endTime = endTimeIdx < times.length ? times[endTimeIdx] : '21:30:00'; // 종료 시간
+    const endTime = endTimeIdx < times.length ? times[endTimeIdx] : "21:30:00"; // 종료 시간
 
     // 이미 예약된 시간인 경우 예약 불가
     if (isConflict(startTime, endTime, classRoom)) {
-      alert('선택한 시간대는 이미 예약되어 있습니다.');
+      showToast("선택한 시간대는 이미 예약되어 있습니다.", "error");
       setSelection(null);
       setIsDragging(false);
       setDragEndTime(null);
@@ -113,7 +126,11 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUs
     }
 
     // 예약 정보 설정
-    const finalizedSelection = { start: startTime, end: endTime, room: classRoom };
+    const finalizedSelection = {
+      start: startTime,
+      end: endTime,
+      room: classRoom,
+    };
     setPlannedReservation({ ...finalizedSelection, selectedDate });
     setIsDragging(false);
     setDragEndTime(null);
@@ -124,14 +141,17 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUs
       <div className="grid grid-cols-6 gap-0 border border-gray-200 rounded-lg overflow-visible relative">
         {/* Header */}
         <div className="bg-gray-50 p-3 border-b border-gray-200 w-40"></div>
-        {CLASSES.map(cls => (
-          <div key={cls} className="bg-gray-50 p-3 font-semibold text-center border-b border-l border-gray-200">
+        {CLASSES.map((cls) => (
+          <div
+            key={cls}
+            className="bg-gray-50 p-3 font-semibold text-center border-b border-l border-gray-200"
+          >
             테이블 {cls}
           </div>
         ))}
 
         {/* Time slots and reservations */}
-        {times.map(time => (
+        {times.map((time) => (
           <React.Fragment key={time}>
             {/* Time column - 중앙 정렬 추가 */}
             <div className="font-medium text-sm p-3 border-b border-gray-200 bg-gray-50 w-40 whitespace-nowrap text-center">
@@ -139,20 +159,23 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUs
             </div>
 
             {/* Reservation slots */}
-            {CLASSES.map(cls => {
+            {CLASSES.map((cls) => {
               const reservation = isReserved(time, cls);
               return (
                 <div
                   key={cls}
                   className={`relative border-b border-l border-gray-200 transition-all duration-200
-                    ${isSelected(time, cls)
-                      ? 'bg-blue-100 hover:bg-blue-200'
-                      : 'hover:bg-gray-50'
+                    ${
+                      isSelected(time, cls)
+                        ? "bg-blue-100 hover:bg-blue-200"
+                        : "hover:bg-gray-50"
                     }
-                    ${isDragging ? 'cursor-pointer' : 'cursor-default'}
+                    ${isDragging ? "cursor-pointer" : "cursor-default"}
                   `}
                   style={{
-                    backgroundColor: reservation ? reservationColors[reservation.reserver.id] : '',
+                    backgroundColor: reservation
+                      ? reservationColors[reservation.reserver.id]
+                      : "",
                   }}
                   onMouseDown={() => handleMouseDown(time, cls)}
                   onMouseEnter={(e) => {
@@ -162,7 +185,7 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUs
                       const rect = e.currentTarget.getBoundingClientRect();
                       setTooltipPosition({
                         x: rect.right,
-                        y: rect.top
+                        y: rect.top,
                       });
                     }
                   }}
@@ -187,29 +210,33 @@ const Schedule = ({ reservations, selectedDate, setPlannedReservation, currentUs
         ))}
       </div>
       {tooltipInfo && (
-        <div style={{
-          position: 'fixed',
-          left: `${tooltipPosition.x}px`,
-          top: `${tooltipPosition.y}px`,
-        }}
-        onMouseEnter={(e) => {
-          e.stopPropagation();
-          setTooltipInfo(tooltipInfo); // tooltip 정보 유지
-        }}
-        onMouseLeave={(e) => {
-          const tooltipRect = e.currentTarget.getBoundingClientRect();
-          const isMouseInTooltip = 
-            e.clientX >= tooltipRect.left &&
-            e.clientX <= tooltipRect.right &&
-            e.clientY >= tooltipRect.top &&
-            e.clientY <= tooltipRect.bottom;
-          
-          if (!isMouseInTooltip) {
-            setTooltipInfo(null);
-          }
-        }}
+        <div
+          style={{
+            position: "fixed",
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
+          }}
+          onMouseEnter={(e) => {
+            e.stopPropagation();
+            setTooltipInfo(tooltipInfo); // tooltip 정보 유지
+          }}
+          onMouseLeave={(e) => {
+            const tooltipRect = e.currentTarget.getBoundingClientRect();
+            const isMouseInTooltip =
+              e.clientX >= tooltipRect.left &&
+              e.clientX <= tooltipRect.right &&
+              e.clientY >= tooltipRect.top &&
+              e.clientY <= tooltipRect.bottom;
+
+            if (!isMouseInTooltip) {
+              setTooltipInfo(null);
+            }
+          }}
         >
-          <ReservationTooltip reservation={tooltipInfo} currentUser={currentUser}/>
+          <ReservationTooltip
+            reservation={tooltipInfo}
+            currentUser={currentUser}
+          />
         </div>
       )}
       {/* Legend - 중앙 정렬 및 스타일 개선 */}
