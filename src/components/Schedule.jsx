@@ -110,11 +110,24 @@ const Schedule = ({
       return;
     }
 
-    const startIdx = times.indexOf(selection.start); // 시작 시간 인덱스
-    const endIdx = times.indexOf(time); // 종료 시간 인덱스
-    const startTime = times[Math.min(startIdx, endIdx)]; // 시작 시간
-    const endTimeIdx = Math.max(startIdx, endIdx) + 1; // 종료 시간 인덱스
-    const endTime = endTimeIdx < times.length ? times[endTimeIdx] : "21:30:00"; // 종료 시간
+    const startIdx = times.indexOf(selection.start);
+    const endIdx = times.indexOf(time);
+    const startTime = times[Math.min(startIdx, endIdx)];
+    const endTimeIdx = Math.max(startIdx, endIdx) + 1;
+    const endTime = endTimeIdx < times.length ? times[endTimeIdx] : "21:30:00";
+
+    // 2시간 초과 예약 체크
+    const start = new Date(`2000-01-01 ${startTime}`);
+    const end = new Date(`2000-01-01 ${endTime}`);
+    const diffHours = (end - start) / (1000 * 60 * 60);
+
+    if (diffHours > 2) {
+      showToast("최대 2시간까지만 예약할 수 있습니다.", "error");
+      setSelection(null);
+      setIsDragging(false);
+      setDragEndTime(null);
+      return;
+    }
 
     // 이미 예약된 시간인 경우 예약 불가
     if (isConflict(startTime, endTime, classRoom)) {
