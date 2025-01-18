@@ -223,7 +223,7 @@ const ReservationInfo = ({ user, selectedDate }) => {
 
             {/* 향상된 스타일의 검색 결과 */}
             {searchResults.length > 0 && (
-              <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50">
+              <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50 max-h-[300px] overflow-y-auto">
                 {searchResults.map((result) => {
                   const highlightedName = result.name.replace(
                     new RegExp(`(${participantSearchKeyword})`, "gi"),
