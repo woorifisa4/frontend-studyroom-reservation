@@ -7,13 +7,9 @@ import Button from "../ui/Button";
 import { formatDateToKorean, formatTime } from "../utils/date";
 import { useReservation } from "../context/ReservationContext";
 
-const ReservationInfo = ({
-  user,
-  selectedDate,
-  plannedReservation,
-  setPlannedReservation,
-}) => {
-  const { createReservation } = useReservation();
+const ReservationInfo = ({ user, selectedDate }) => {
+  const { createReservation, plannedReservation, setPlannedReservation } =
+    useReservation();
   const [reservationDescription, setReservationDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [participantSearchKeyword, setParticipantSearchKeyword] = useState("");
@@ -67,26 +63,27 @@ const ReservationInfo = ({
    * 새로운 예약을 생성하는 핸들러
    */
   const handleReservationSubmit = async () => {
-    if (!user || !plannedReservation || isSubmitting) return;
-
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
-    const requestDto = {
+    const reservationData = {
       room: plannedReservation.room,
       date: selectedDate,
       start: plannedReservation.start,
       end: plannedReservation.end,
       description: reservationDescription,
       reserverId: user.id,
-      participants: selectedParticipants.map((participant) => participant.id),
+      participants: selectedParticipants,
     };
 
-    await createReservation(requestDto);
+    const success = await createReservation(reservationData);
 
-    // 폼 초기화
-    setPlannedReservation(null);
-    setReservationDescription("");
-    setSelectedParticipants([]);
+    if (success) {
+      setPlannedReservation(null);
+      setReservationDescription("");
+      setSelectedParticipants([]);
+    }
+
     setIsSubmitting(false);
   };
 
