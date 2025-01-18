@@ -3,7 +3,7 @@ import { Calendar, Clock, User, Layout, X, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { userApi } from "../api/userApi";
 import debounce from "lodash/debounce";
-import Button from "../ui/Button";
+import { Button } from "@heroui/button";
 import { formatDateToKorean, formatTime } from "../utils/date";
 import { useReservation } from "../context/ReservationContext";
 
@@ -266,10 +266,13 @@ const ReservationInfo = ({ user, selectedDate }) => {
 
         {/* 예약하기 버튼 */}
         <Button
-          onClick={handleReservationSubmit}
-          disabled={isSubmitting}
-          variant="primary"
+          onPress={handleReservationSubmit}
+          isDisabled={isSubmitting}
+          color="primary"
+          variant="solid"
+          radius="lg"
           fullWidth
+          isLoading={isSubmitting}
         >
           {isSubmitting ? "예약 중..." : "예약하기"}
         </Button>

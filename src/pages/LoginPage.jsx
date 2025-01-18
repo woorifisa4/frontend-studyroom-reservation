@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import Button from "../ui/Button";
+import { Button } from "@heroui/button";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -77,7 +77,13 @@ const LoginPage = () => {
             </div>
 
             <div className="mt-8">
-              <Button type="submit" variant="primary" fullWidth>
+              <Button
+                type="submit"
+                color="primary"
+                variant="solid"
+                radius="lg"
+                fullWidth
+              >
                 로그인
               </Button>
             </div>
@@ -97,8 +103,10 @@ const LoginPage = () => {
 
             <div className="mt-4">
               <Button
-                onClick={() => navigate("/signup")}
-                variant="secondary"
+                onPress={() => navigate("/signup")}
+                color="primary"
+                variant="light"
+                radius="lg"
                 fullWidth
               >
                 회원가입
