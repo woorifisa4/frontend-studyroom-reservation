@@ -6,6 +6,7 @@ import debounce from "lodash/debounce";
 import { Button } from "@heroui/button";
 import { formatDateToKorean, formatTime } from "../utils/date";
 import { useReservation } from "../context/ReservationContext";
+import { showToast } from "../ui/Toast";
 
 const ReservationInfo = ({ user, selectedDate }) => {
   const { createReservation, plannedReservation, setPlannedReservation } =
@@ -45,9 +46,9 @@ const ReservationInfo = ({ user, selectedDate }) => {
 
         setSearchResults(filteredUsers); // 검색 결과 설정
       } catch (error) {
-        // Todo: 토글로 변경
-        console.error("참여자 검색 중 오류 발생:", error);
+        showToast("참여자 검색 중 오류가 발생했습니다.", "error");
         setSearchResults([]);
+        
       } finally {
         setIsSearching(false); // 검색 완료
       }
