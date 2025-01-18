@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { userApi } from '../api/userApi';
-import Button from '../ui/Button';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { userApi } from "../api/userApi";
+import Button from "../ui/Button";
+import { showToast } from "../ui/Toast";
 
 const LoginPage = ({ setUser }) => {
   const [email, setEmail] = useState("");
@@ -12,11 +13,11 @@ const LoginPage = ({ setUser }) => {
     e.preventDefault();
     try {
       const response = await userApi.login(name, email);
-      localStorage.setItem('user', JSON.stringify(response.data));
+      localStorage.setItem("user", JSON.stringify(response.data));
       setUser(response.data);
+      showToast("로그인에 성공했습니다.", "success");
     } catch (error) {
-      console.error('Error logging in:', error);
-      alert('로그인에 실패했습니다.');
+      showToast("로그인에 실패했습니다.", "error");
     }
   };
 
@@ -38,7 +39,10 @@ const LoginPage = ({ setUser }) => {
         <div className="bg-white py-8 px-4 shadow-xl rounded-2xl sm:px-10 border border-gray-100">
           <form className="space-y-6" onSubmit={handleLogin}>
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-semibold text-gray-700"
+              >
                 이름
               </label>
               <div className="mt-1">
@@ -56,7 +60,10 @@ const LoginPage = ({ setUser }) => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-gray-700"
+              >
                 이메일
               </label>
               <div className="mt-1">
@@ -74,11 +81,7 @@ const LoginPage = ({ setUser }) => {
             </div>
 
             <div className="mt-8">
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-              >
+              <Button type="submit" variant="primary" fullWidth>
                 로그인
               </Button>
             </div>
@@ -98,7 +101,7 @@ const LoginPage = ({ setUser }) => {
 
             <div className="mt-4">
               <Button
-                onClick={() => navigate('/signup')}
+                onClick={() => navigate("/signup")}
                 variant="secondary"
                 fullWidth
               >

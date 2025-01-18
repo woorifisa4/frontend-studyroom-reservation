@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { userApi } from '../api/userApi';
-import Button from '../ui/Button';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { userApi } from "../api/userApi";
+import Button from "../ui/Button";
+import { showToast } from "../ui/Toast";
 
 const SignUpPage = () => {
   const [name, setName] = useState("");
@@ -12,11 +13,11 @@ const SignUpPage = () => {
     e.preventDefault();
     try {
       await userApi.signup(name, email);
-      alert('회원가입이 완료되었습니다. 로그인해주세요.');
-      navigate('/login');
+      showToast("회원가입이 완료되었습니다. 로그인해주세요.", "success");
+      navigate("/login");
     } catch (error) {
-      console.error('Error signing up:', error);
-      alert('회원가입에 실패했습니다.');
+      console.error("Error signing up:", error);
+      showToast("회원가입에 실패했습니다.", "error");
     }
   };
 
@@ -38,7 +39,10 @@ const SignUpPage = () => {
         <div className="bg-white py-8 px-4 shadow-xl rounded-2xl sm:px-10 border border-gray-100">
           <form className="space-y-6" onSubmit={handleSignup}>
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-semibold text-gray-700"
+              >
                 이름
               </label>
               <div className="mt-1">
@@ -56,7 +60,10 @@ const SignUpPage = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-gray-700"
+              >
                 이메일
               </label>
               <div className="mt-1">
@@ -74,11 +81,7 @@ const SignUpPage = () => {
             </div>
 
             <div className="mt-8">
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-              >
+              <Button type="submit" variant="primary" fullWidth>
                 회원가입
               </Button>
             </div>
@@ -98,7 +101,7 @@ const SignUpPage = () => {
 
             <div className="mt-4">
               <Button
-                onClick={() => navigate('/login')}
+                onClick={() => navigate("/login")}
                 variant="secondary"
                 fullWidth
               >
