@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Calendar, Clock, User, Layout, X, Users } from "lucide-react";
 import { motion } from "framer-motion";
-import { reservationApi } from "../api/reservationApi";
 import { userApi } from "../api/userApi";
 import debounce from "lodash/debounce";
 import Button from "../ui/Button";
@@ -14,7 +13,7 @@ const ReservationInfo = ({
   plannedReservation,
   setPlannedReservation,
 }) => {
-  const { loadReservations } = useReservation(); // Add this line
+  const { createReservation } = useReservation();
   const [reservationDescription, setReservationDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [participantSearchKeyword, setParticipantSearchKeyword] = useState("");
@@ -70,39 +69,25 @@ const ReservationInfo = ({
   const handleReservationSubmit = async () => {
     if (!user || !plannedReservation || isSubmitting) return;
 
-    try {
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
-      // 예약 생성 API 호출
-      const requestDto = {
-        room: plannedReservation.room,
-        date: selectedDate,
-        start: plannedReservation.start,
-        end: plannedReservation.end,
-        description: reservationDescription,
-        reserverId: user.id,
-        participants: selectedParticipants.map((participant) => participant.id),
-      };
+    const requestDto = {
+      room: plannedReservation.room,
+      date: selectedDate,
+      start: plannedReservation.start,
+      end: plannedReservation.end,
+      description: reservationDescription,
+      reserverId: user.id,
+      participants: selectedParticipants.map((participant) => participant.id),
+    };
 
-      await reservationApi.create(requestDto);
+    await createReservation(requestDto);
 
-      // Update reservations using context
-      await loadReservations(selectedDate.toISOString().split("T")[0]);
-
-      // 폼 초기화
-      setPlannedReservation(null);
-      setReservationDescription("");
-
-      // TODO: 토글로 변경
-      alert("강의실 예약이 완료되었습니다.");
-    } catch (error) {
-      console.error("예약 생성 실패:", error);
-
-      // TODO: 토글로 변경
-      alert("예약 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    // 폼 초기화
+    setPlannedReservation(null);
+    setReservationDescription("");
+    setSelectedParticipants([]);
+    setIsSubmitting(false);
   };
 
   const handleParticipantSelect = (participant) => {
