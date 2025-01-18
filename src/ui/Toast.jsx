@@ -16,9 +16,9 @@ const Toast = ({ message, type = "success", onClose }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -100 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -100 }}
+      initial={{ opacity: 0, y: -100, x: "-50%" }}
+      animate={{ opacity: 1, y: 0, x: "-50%" }}
+      exit={{ opacity: 0, y: -100, x: "-50%" }}
       className={`fixed z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg
         ${
           type === "success"
@@ -27,8 +27,8 @@ const Toast = ({ message, type = "success", onClose }) => {
         }`}
       style={{
         left: "50%",
-        top: "20px",
-        transform: "translateX(-50%)",
+        top: "20px", // 화면 상단에서 20px 떨어진 위치
+        transform: "translateX(-50%)", // 가로 중앙 정렬만 적용
         width: "fit-content", // 텍스트 크기에 맞게 자동 조절
         maxWidth: "90vw", // 화면 너비의 90%를 넘지 않도록
         minWidth: "auto", // 최소 너비 제거
