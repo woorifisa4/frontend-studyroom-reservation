@@ -1,23 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { userApi } from "../api/userApi";
+import { useUser } from "../context/UserContext";
 import Button from "../ui/Button";
-import { showToast } from "../ui/Toast";
 
 const SignUpPage = () => {
+  const { signup } = useUser();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    try {
-      await userApi.signup(name, email);
-      showToast("회원가입이 완료되었습니다. 로그인해주세요.", "success");
+    const result = await signup(name, email);
+    if (result) {
       navigate("/login");
-    } catch (error) {
-      console.error("Error signing up:", error);
-      showToast("회원가입에 실패했습니다.", "error");
     }
   };
 

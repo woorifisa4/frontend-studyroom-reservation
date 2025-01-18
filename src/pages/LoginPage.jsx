@@ -1,23 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { userApi } from "../api/userApi";
+import { useUser } from "../context/UserContext";
 import Button from "../ui/Button";
-import { showToast } from "../ui/Toast";
 
-const LoginPage = ({ setUser }) => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const navigate = useNavigate();
+  const { login } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const response = await userApi.login(name, email);
-      localStorage.setItem("user", JSON.stringify(response.data));
-      setUser(response.data);
-      showToast("로그인에 성공했습니다.", "success");
-    } catch (error) {
-      showToast("로그인에 실패했습니다.", "error");
+    const result = await login(name, email);
+    if (result) {
+      navigate("/");
     }
   };
 
