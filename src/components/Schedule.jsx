@@ -7,7 +7,7 @@ import { formatTime } from "../utils/date";
 import { showToast } from "../ui/Toast";
 
 const Schedule = ({
-  reservations,
+  reservations = [], // 기본값 추가
   selectedDate,
   setPlannedReservation,
   currentUser,
@@ -31,18 +31,21 @@ const Schedule = ({
 
   // 사용자별 색상을 메모이제이션하여 재렌더링시에도 유지
   const reservationColors = useMemo(() => {
+    if (!Array.isArray(reservations)) return {}; // reservations가 배열이 아닐 경우 빈 객체 반환
+
     const colors = {};
     reservations.forEach((reservation) => {
-      if (!colors[reservation.reserver.id]) {
+      if (reservation?.reserver?.id && !colors[reservation.reserver.id]) {
         colors[reservation.reserver.id] = getRandomLightColor();
       }
     });
 
     return colors;
-  }, [reservations.map((r) => r.reserver.id).join(",")]); // 예약자 ID 목록이 변경될 때만 색상 재생성
+  }, [reservations]); // reservations가 배열이 아닐 경우 빈 문자열을 디펜던시에 포함
 
   // 이미 예약된 시간인지 반환하는 함수
   const isReserved = (startTime, classRoom) => {
+    if (!Array.isArray(reservations)) return false;
     return reservations.find(
       (reservation) =>
         reservation.room === classRoom &&
@@ -53,6 +56,7 @@ const Schedule = ({
 
   // 예약된 일정과 사용자가 예약하고자 하는 일정이 출돌이 나는지 반환하는 함수
   const isConflict = (startTime, endTime, classRoom) => {
+    if (!Array.isArray(reservations)) return false;
     return reservations.some(
       (reservation) =>
         reservation.room === classRoom &&
@@ -186,9 +190,10 @@ const Schedule = ({
                     ${isDragging ? "cursor-pointer" : "cursor-default"}
                   `}
                   style={{
-                    backgroundColor: reservation
-                      ? reservationColors[reservation.reserver.id]
-                      : "",
+                    backgroundColor:
+                      reservation && reservation.reserver?.id
+                        ? reservationColors[reservation.reserver.id]
+                        : "",
                   }}
                   onMouseDown={() => handleMouseDown(time, cls)}
                   onMouseEnter={(e) => {
@@ -207,7 +212,7 @@ const Schedule = ({
                   }}
                   onMouseUp={() => handleMouseUp(time, cls)}
                 >
-                  {reservation && (
+                  {reservation && reservation.reserver?.name && (
                     <div className="relative w-full h-full">
                       <div className="absolute inset-0 flex items-center justify-center">
                         <span className="text-sm font-medium text-gray-700 truncate px-2">
