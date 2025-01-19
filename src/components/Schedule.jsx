@@ -31,6 +31,8 @@ const Schedule = ({
 
   // 사용자별 색상을 메모이제이션하여 재렌더링시에도 유지
   const reservationColors = useMemo(() => {
+    if (!Array.isArray(reservations)) return {}; // reservations가 배열이 아닐 경우 빈 객체 반환
+
     const colors = {};
     reservations.forEach((reservation) => {
       if (!colors[reservation.reserver.id]) {
@@ -39,7 +41,11 @@ const Schedule = ({
     });
 
     return colors;
-  }, [reservations.map((r) => r.reserver.id).join(",")]); // 예약자 ID 목록이 변경될 때만 색상 재생성
+  }, [
+    Array.isArray(reservations)
+      ? reservations.map((r) => r.reserver.id).join(",")
+      : "",
+  ]); // reservations가 배열이 아닐 경우 빈 문자열을 디펜던시에 포함
 
   // 이미 예약된 시간인지 반환하는 함수
   const isReserved = (startTime, classRoom) => {
