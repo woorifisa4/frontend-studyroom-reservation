@@ -1,22 +1,25 @@
-import { BUSINESS_HOURS, INTERVAL } from '../constants/reservation';
+import { BUSINESS_HOUR, INTERVAL } from "../constants/reservation";
 
 /**
  * 예약 가능한 시간대 목록을 생성하는 함수
  * @returns {string[]} HH:mm:ss 형식의 시간대 목록
  */
 export const generateReservationTimeSlots = () => {
-  const { START, END } = BUSINESS_HOURS;
   const timeSlots = [];
+  const startHour = parseInt(BUSINESS_HOUR.START.split(":")[0]);
+  const startMinute = parseInt(BUSINESS_HOUR.START.split(":")[1]);
+  const endHour = parseInt(BUSINESS_HOUR.END.split(":")[0]);
+  const endMinute = parseInt(BUSINESS_HOUR.END.split(":")[1]);
 
-  for (let hour = START.HOUR; hour <= END.HOUR; hour++) {
-    // 시작 분과 종료 분 계산
-    const startMinute = hour === START.HOUR ? START.MINUTE : 0;
-    const endMinute = hour === END.HOUR ? END.MINUTE : 59;
+  for (let hour = startHour; hour <= endHour; hour++) {
+    const startMin = hour === startHour ? startMinute : 0;
+    const endMin = hour === endHour ? endMinute : 59;
 
-    // INTERVAL 간격으로 시간대 생성
-    for (let minute = startMinute; minute <= endMinute; minute += INTERVAL) {
+    for (let minute = startMin; minute <= endMin; minute += INTERVAL) {
       timeSlots.push(
-        `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`
+        `${hour.toString().padStart(2, "0")}:${minute
+          .toString()
+          .padStart(2, "0")}:00`
       );
     }
   }
@@ -30,18 +33,17 @@ export const generateReservationTimeSlots = () => {
  * @returns {boolean} 예약 가능 여부
  */
 export const isValidReservationTime = (time) => {
-  const [hours, minutes] = time.split(':').map(Number);
-  const { START, END } = BUSINESS_HOURS;
+  const [hours, minutes] = time.split(":").map(Number);
+  const today = new Date();
+  const dateString = today.toISOString().split("T")[0];
 
-  // 운영 시간 외 체크
-  if (hours < START.HOUR || hours > END.HOUR) return false;
-  
-  // 시작 시간 체크
-  if (hours === START.HOUR && minutes < START.MINUTE) return false;
-  
-  // 종료 시간 체크
-  if (hours === END.HOUR && minutes > END.MINUTE) return false;
-  
-  // 시간 간격 체크
-  return minutes % INTERVAL === 0;
+  const startTime = new Date(`${dateString} ${BUSINESS_HOUR.START}`);
+  const endTime = new Date(`${dateString} ${BUSINESS_HOUR.END}`);
+  const currentTime = new Date(`${dateString} ${time}`);
+
+  return (
+    currentTime >= startTime &&
+    currentTime < endTime &&
+    minutes % INTERVAL === 0
+  );
 };

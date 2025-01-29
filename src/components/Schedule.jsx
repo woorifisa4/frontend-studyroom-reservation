@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ReservationTooltip from "./ReservationTooltip";
-import { CLASSES } from "../constants/reservation";
+import { CLASSES, TIME_FORMAT, BUSINESS_HOUR } from "../constants/reservation";
 import { getRandomLightColor } from "../utils/color";
 import { generateReservationTimeSlots } from "../utils/reservation";
 import { formatTime } from "../utils/date";
@@ -83,10 +83,10 @@ const Schedule = ({
     );
   };
 
-  // 종료 시간을 계산하는 헬퍼 함수 추가
+  // 종료 시간을 계산하는 헬퍼 함수 수정
   const getEndTime = (time) => {
     const timeIndex = times.indexOf(time);
-    if (timeIndex === times.length - 1) return "21:30:00";
+    if (timeIndex === times.length - 1) return BUSINESS_HOUR.END;
     return times[timeIndex + 1];
   };
 
@@ -168,9 +168,9 @@ const Schedule = ({
         ))}
 
         {/* Time slots and reservations */}
-        {times.map((time) => (
+        {times.slice(0, -1).map((time, index) => (
           <React.Fragment key={time}>
-            {/* Time column - 중앙 정렬 추가 */}
+            {/* Time column */}
             <div className="font-medium text-sm p-3 border-b border-gray-200 bg-gray-50 w-40 whitespace-nowrap text-center">
               {`${formatTime(time)} ~ ${formatTime(getEndTime(time))}`}
             </div>
