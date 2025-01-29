@@ -1,10 +1,11 @@
-import axiosInstance from './axios.config';
-import { ENDPOINTS } from './endpoints';
+import axiosInstance from "./axios.config";
+import { ENDPOINTS } from "./endpoints";
 
 export const reservationApi = {
   create: async (reservationData) => {
-    const { room, date, start, end, description, reserverId, participants } = reservationData;
-    
+    const { room, date, start, end, description, reserverId, participants } =
+      reservationData;
+
     return axiosInstance.post(ENDPOINTS.RESERVATION.CREATE, {
       room,
       date,
@@ -12,7 +13,7 @@ export const reservationApi = {
       end,
       description,
       reserver: reserverId,
-      participants
+      participants: participants.map((participant) => participant.id),
     });
   },
 
@@ -22,5 +23,5 @@ export const reservationApi = {
 
   delete: async (id) => {
     return axiosInstance.delete(ENDPOINTS.RESERVATION.DELETE(id));
-  }
+  },
 };
