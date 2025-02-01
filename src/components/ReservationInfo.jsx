@@ -48,7 +48,6 @@ const ReservationInfo = ({ user, selectedDate }) => {
       } catch (error) {
         showToast("참여자 검색 중 오류가 발생했습니다.", "error");
         setSearchResults([]);
-        
       } finally {
         setIsSearching(false); // 검색 완료
       }
@@ -86,7 +85,7 @@ const ReservationInfo = ({ user, selectedDate }) => {
     setIsSubmitting(true);
 
     const reservationData = {
-      room: plannedReservation.room,
+      table: plannedReservation.table,
       date: selectedDate,
       start: plannedReservation.start,
       end: plannedReservation.end,
@@ -154,7 +153,7 @@ const ReservationInfo = ({ user, selectedDate }) => {
     {
       icon: <Layout size={20} />,
       label: "테이블",
-      value: plannedReservation.room,
+      value: plannedReservation.table,
     },
   ];
 

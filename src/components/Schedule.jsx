@@ -48,7 +48,7 @@ const Schedule = ({
     if (!Array.isArray(reservations)) return false;
     return reservations.find(
       (reservation) =>
-        reservation.room === classRoom &&
+        reservation.table === classRoom &&
         reservation.start <= startTime &&
         startTime < reservation.end
     );
@@ -59,7 +59,7 @@ const Schedule = ({
     if (!Array.isArray(reservations)) return false;
     return reservations.some(
       (reservation) =>
-        reservation.room === classRoom &&
+        reservation.table === classRoom &&
         ((startTime >= reservation.start && startTime < reservation.end) ||
           (endTime > reservation.start && endTime <= reservation.end) ||
           (startTime <= reservation.start && endTime >= reservation.end))
@@ -70,13 +70,13 @@ const Schedule = ({
   const isSelected = (time, classRoom) => {
     if (!selection || !isDragging) return false;
 
-    const { start, room } = selection;
+    const { start, table } = selection;
     const end = dragEndTime || start;
     const startIdx = times.indexOf(start);
     const endIdx = times.indexOf(end);
     const timeIdx = times.indexOf(time);
 
-    if (room !== classRoom) return false;
+    if (table !== classRoom) return false;
     return (
       timeIdx >= Math.min(startIdx, endIdx) &&
       timeIdx <= Math.max(startIdx, endIdx)
@@ -94,20 +94,20 @@ const Schedule = ({
   const handleMouseDown = (time, classRoom) => {
     if (isReserved(time, classRoom)) return;
 
-    setSelection({ start: time, room: classRoom });
+    setSelection({ start: time, table: classRoom });
     setIsDragging(true);
     setDragEndTime(time);
   };
 
   // 마우스 이벤트 핸들러 (마우스를 움직일 때의 동작)
   const handleMouseEnter = (time, classRoom) => {
-    if (!isDragging || selection?.room !== classRoom) return;
+    if (!isDragging || selection?.table !== classRoom) return;
     setDragEndTime(time);
   };
 
   // 마우스 이벤트 핸들러 (마우스를 뗄 때의 동작)
   const handleMouseUp = (time, classRoom) => {
-    if (!isDragging || selection?.room !== classRoom) {
+    if (!isDragging || selection?.table !== classRoom) {
       setIsDragging(false);
       setSelection(null);
       setDragEndTime(null);
@@ -146,7 +146,7 @@ const Schedule = ({
     const finalizedSelection = {
       start: startTime,
       end: endTime,
-      room: classRoom,
+      table: classRoom,
     };
     setPlannedReservation({ ...finalizedSelection, selectedDate });
     setIsDragging(false);
