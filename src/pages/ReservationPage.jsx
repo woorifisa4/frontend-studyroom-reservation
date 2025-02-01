@@ -26,17 +26,19 @@ const ReservationPage = ({ user }) => {
   const [isFabActivated, setIsFabActivated] = useState(false); // FAB 버튼 활성화 여부
   const [isCalendarOpen, setIsCalendarOpen] = useState(false); // 달력 모달 오픈 여부
 
-  // 선택한 날짜에 해당하는 예약 목록을 불러오는 함수
-  useEffect(() => {
-    loadReservations(selectedDate.toISOString().split("T")[0]);
-  }, [selectedDate, loadReservations]);
-
-  // URL이 변경될 때마다 selectedDate 업데이트
+  // URL 변경과 예약 조회를 하나의 useEffect로 통합
   useEffect(() => {
     if (urlDate) {
-      setSelectedDate(new Date(urlDate));
+      const newDate = new Date(urlDate);
+      setSelectedDate(newDate);
+      loadReservations(urlDate);
+      
+    } else {
+      const today = new Date();
+      const dateStr = today.toISOString().split("T")[0];
+      loadReservations(dateStr);
     }
-  }, [urlDate]);
+  }, [urlDate, loadReservations]);
 
   // 각각의 backdrop에 대한 클릭 핸들러를 분리
   const handleReservationBackdropClick = (e) => {

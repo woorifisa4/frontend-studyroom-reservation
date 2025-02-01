@@ -25,20 +25,18 @@ const DateNavigation = ({
 }) => {
   const navigate = useNavigate();
 
-  // 날짜 이동 핸들러
+  // 날짜 이동 핸들러 수정
   const navigateDate = (days) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(selectedDate.getDate() + days);
     newDate.setHours(9, 0, 0, 0);
 
-    setSelectedDate(newDate);
-    navigate(`/reservations?date=${newDate.toISOString().split("T")[0]}`);
+    const dateStr = newDate.toISOString().split("T")[0];
+    navigate(`/reservations?date=${dateStr}`);
   };
 
-  // 날짜 변경 핸들러
+  // 날짜 변경 핸들러 수정
   const handleDateChange = (date) => {
-    const newDate = new Date(date + "T09:00:00");
-    setSelectedDate(newDate);
     setIsCalendarOpen(false);
     navigate(`/reservations?date=${date}`);
   };
