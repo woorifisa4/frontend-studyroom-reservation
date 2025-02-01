@@ -1,5 +1,5 @@
-import axiosInstance from './axios.config';
-import { ENDPOINTS } from './endpoints';
+import axiosInstance from "./axios.config";
+import { ENDPOINTS } from "./endpoints";
 
 export const userApi = {
   signup: async (name, email) => {
@@ -11,8 +11,12 @@ export const userApi = {
   },
 
   search: async (keyword) => {
-    return axiosInstance.get(ENDPOINTS.USER.SEARCH, { 
-      params: { keyword } 
+    return axiosInstance.get(ENDPOINTS.USER.SEARCH, {
+      params: { keyword },
     });
-  }
+  },
+
+  refreshToken: async (refreshToken) => {
+    return axiosInstance.post(ENDPOINTS.USER.REFRESH, { refreshToken });
+  },
 };
