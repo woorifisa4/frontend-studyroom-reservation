@@ -3,7 +3,9 @@ import { userApi } from "../api/userApi";
 import { showToast } from "../ui/Toast";
 import CryptoJS from "crypto-js";
 
-const STORAGE_KEY = "woorifisa-studyroom-reservation-user-info";
+const USER_STORAGE_KEY = "woorifisa-studyroom-reservation-user-info";
+const ACCESS_TOKEN_KEY = "woorifisa-studyroom-reservation-access-token";
+const REFRESH_TOKEN_KEY = "woorifisa-studyroom-reservation-refresh-token";
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
 const IV_LENGTH = parseInt(process.env.REACT_APP_IV_LENGTH);
 
@@ -77,18 +79,23 @@ export const useUser = () => {
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const encryptedUser = localStorage.getItem(STORAGE_KEY);
-    return encryptedUser ? decryptData(encryptedUser) : null;
+    const savedUser = localStorage.getItem(USER_STORAGE_KEY);
+    return savedUser ? decryptData(savedUser) : null;
   });
 
   const login = useCallback(async (name, email) => {
     try {
       const response = await userApi.login(name, email);
-      const userData = response.data;
+      const { data } = response;
+      const { token, ...userData } = data;
 
+      // 사용자 정보 저장
       const encryptedData = encryptData(userData);
       if (encryptedData) {
-        localStorage.setItem(STORAGE_KEY, encryptedData);
+        localStorage.setItem(USER_STORAGE_KEY, encryptedData);
+        // 토큰 저장
+        localStorage.setItem(ACCESS_TOKEN_KEY, token.accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, token.refreshToken);
         setUser(userData);
         showToast("로그인에 성공했습니다.", "success");
         return true;
@@ -112,7 +119,9 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(USER_STORAGE_KEY);
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     setUser(null);
     showToast("로그아웃되었습니다.", "success");
   }, []);

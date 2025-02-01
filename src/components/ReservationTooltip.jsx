@@ -55,7 +55,7 @@ const ReservationTooltip = ({ reservation, currentUser }) => {
         <div className="flex items-start gap-2">
           <span className="text-gray-500 w-20">• 예약 장소</span>
           <span className="font-medium text-gray-800">
-            테이블 {reservation.room}
+            테이블 {reservation.table}
           </span>
         </div>
       </div>

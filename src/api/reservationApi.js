@@ -3,11 +3,11 @@ import { ENDPOINTS } from "./endpoints";
 
 export const reservationApi = {
   create: async (reservationData) => {
-    const { room, date, start, end, description, reserverId, participants } =
+    const { table, date, start, end, description, reserverId, participants } =
       reservationData;
 
     return axiosInstance.post(ENDPOINTS.RESERVATION.CREATE, {
-      room,
+      table,
       date,
       start,
       end,
