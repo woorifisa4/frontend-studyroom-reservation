@@ -43,15 +43,20 @@ const Schedule = ({
     return colors;
   }, [reservations]); // reservations가 배열이 아닐 경우 빈 문자열을 디펜던시에 포함
 
-  // 이미 예약된 시간인지 반환하는 함수
-  const isReserved = (startTime, classRoom) => {
+  // 이미 예약된 시간인지 반환하는 함수 수정
+  const isReserved = (time, classRoom) => {
     if (!Array.isArray(reservations)) return false;
-    return reservations.find(
+
+    // 예약 정보 찾기
+    const foundReservation = reservations.find(
       (reservation) =>
         reservation.table === classRoom &&
-        reservation.start <= startTime &&
-        startTime < reservation.end
+        time >= reservation.start &&
+        time < reservation.end
     );
+
+    // 예약 정보가 있고 시작 시간과 일치하면 전체 예약 정보를 반환, 아니면 true/false만 반환
+    return foundReservation || false;
   };
 
   // 예약된 일정과 사용자가 예약하고자 하는 일정이 출돌이 나는지 반환하는 함수
@@ -60,9 +65,7 @@ const Schedule = ({
     return reservations.some(
       (reservation) =>
         reservation.table === classRoom &&
-        ((startTime >= reservation.start && startTime < reservation.end) ||
-          (endTime > reservation.start && endTime <= reservation.end) ||
-          (startTime <= reservation.start && endTime >= reservation.end))
+        !(endTime <= reservation.start || startTime >= reservation.end)
     );
   };
 
@@ -167,8 +170,7 @@ const Schedule = ({
           </div>
         ))}
 
-        {/* Time slots and reservations */}
-        {times.slice(0, -1).map((time, index) => (
+        {times.slice(0, -1).map((time) => (
           <React.Fragment key={time}>
             {/* Time column */}
             <div className="font-medium text-sm p-3 border-b border-gray-200 bg-gray-50 w-40 whitespace-nowrap text-center">
@@ -190,10 +192,9 @@ const Schedule = ({
                     ${isDragging ? "cursor-pointer" : "cursor-default"}
                   `}
                   style={{
-                    backgroundColor:
-                      reservation && reservation.reserver?.id
-                        ? reservationColors[reservation.reserver.id]
-                        : "",
+                    backgroundColor: reservation
+                      ? reservationColors[reservation.reserver?.id]
+                      : undefined,
                   }}
                   onMouseDown={() => handleMouseDown(time, cls)}
                   onMouseEnter={(e) => {
