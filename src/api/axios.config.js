@@ -62,8 +62,11 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // 401 에러(토큰 만료)이고 첫 번째 재시도인 경우에만 토큰 갱신 시도
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // 401 또는 403 에러이고 첫 번째 재시도인 경우에만 토큰 갱신 시도
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
       try {
